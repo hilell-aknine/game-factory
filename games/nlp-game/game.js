@@ -5,7 +5,23 @@
 // ═══════════════════════════════════════
 const SUPABASE_URL = '';
 const SUPABASE_ANON_KEY = '';
-const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const _supabase = (SUPABASE_URL && SUPABASE_ANON_KEY)
+    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+    : {
+        auth: {
+            getSession: async () => ({ data: { session: null } }),
+            signInWithOAuth: async () => ({ error: { message: 'לא הוגדר חיבור לשרת. השתמשו במצב אורח.' } }),
+            signInWithPassword: async () => ({ error: { message: 'לא הוגדר חיבור לשרת. השתמשו במצב אורח.' } }),
+            signUp: async () => ({ error: { message: 'לא הוגדר חיבור לשרת. השתמשו במצב אורח.' } }),
+            signOut: async () => ({}),
+            onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } })
+        },
+        from: () => ({
+            select: () => ({ eq: () => ({ single: async () => ({ data: null, error: true }) }) }),
+            upsert: async () => ({}),
+            update: () => ({ eq: async () => ({}) })
+        })
+    };
 
 const HEART_RECOVERY_MINUTES = 20;
 
@@ -771,7 +787,7 @@ class StoryGame {
         return `
             <div class="mentor-container mentor-enter">
                 <div class="mentor-avatar mentor-${mood}">
-                    <img src="mentor-ram.png" alt="רם" />
+                    <img src="mentor-ram.png" alt="רם" onerror="this.style.display='none';this.parentElement.innerHTML='🧑‍🏫'" />
                 </div>
                 <div class="mentor-bubble">
                     ${showName ? '<div class="mentor-name">רם - המנטור שלך</div>' : ''}
@@ -1224,34 +1240,34 @@ class StoryGame {
             <div class="story-builder">
                 <button class="back-btn" onclick="game.transitionTo(function() { game.renderStoryBuilderStep() })">← חזרה לעריכה</button>
 
-                ${this.createMentorHTML('וואו! יצרת סיפור שלם! בואו נראה איך הוא נראה ביחד. את/ה יכול/ה להעתיק אותו ולהשתמש בו בשיווק שלך.')}
+                ${this.createMentorHTML('מדהים! עברת תהליך NLP שלם! בואו נראה את כל השלבים ביחד. את/ה יכול/ה להעתיק ולהשתמש בזה בתרגול היומי.')}
 
                 <div class="story-preview">
-                    <div class="story-preview-title">🎯 הסיפור שלך</div>
+                    <div class="story-preview-title">🧠 התרגול שלך</div>
 
                     <div class="story-preview-section">
-                        <div class="story-preview-label">קהל היעד</div>
-                        <div class="story-preview-text">${answers.target || ''}</div>
+                        <div class="story-preview-label">המצב</div>
+                        <div class="story-preview-text">${answers.situation || ''}</div>
                     </div>
 
                     <div class="story-preview-section">
-                        <div class="story-preview-label">הלפני - הכאב</div>
-                        <div class="story-preview-text">${answers.before || ''}</div>
+                        <div class="story-preview-label">האמונה המגבילה</div>
+                        <div class="story-preview-text">${answers.belief || ''}</div>
                     </div>
 
                     <div class="story-preview-section">
-                        <div class="story-preview-label">נקודת המפנה</div>
-                        <div class="story-preview-text">${answers.turning || ''}</div>
+                        <div class="story-preview-label">הריפריים</div>
+                        <div class="story-preview-text">${answers.reframe || ''}</div>
                     </div>
 
                     <div class="story-preview-section">
-                        <div class="story-preview-label">האחרי - השינוי</div>
-                        <div class="story-preview-text">${answers.after || ''}</div>
+                        <div class="story-preview-label">העוגן</div>
+                        <div class="story-preview-text">${answers.anchor || ''}</div>
                     </div>
 
                     <div class="story-preview-section">
-                        <div class="story-preview-label">המסר וקריאה לפעולה</div>
-                        <div class="story-preview-text">${answers.message || ''}</div>
+                        <div class="story-preview-label">הצעד הראשון</div>
+                        <div class="story-preview-text">${answers.action || ''}</div>
                     </div>
                 </div>
 
@@ -1277,20 +1293,20 @@ class StoryGame {
 
     copyStory() {
         const answers = this.storyBuilderData.answers;
-        const storyText = `📌 קהל היעד:
-${answers.target || ''}
+        const storyText = `📋 המצב:
+${answers.situation || ''}
 
-😔 הלפני - הכאב:
-${answers.before || ''}
+🔒 האמונה המגבילה:
+${answers.belief || ''}
 
-⚡ נקודת המפנה:
-${answers.turning || ''}
+🔄 הריפריים:
+${answers.reframe || ''}
 
-🌟 האחרי - השינוי:
-${answers.after || ''}
+⚓ העוגן:
+${answers.anchor || ''}
 
-🎯 המסר וקריאה לפעולה:
-${answers.message || ''}`;
+👣 הצעד הראשון:
+${answers.action || ''}`;
 
         navigator.clipboard.writeText(storyText).then(() => {
             const btn = document.querySelector('.copy-btn');
@@ -1469,6 +1485,9 @@ ${answers.message || ''}`;
             case 'compare':
                 this.renderCompare(container, exercise);
                 break;
+            case 'scenario':
+                this.renderScenario(container, exercise);
+                break;
             case 'improve':
                 this.renderImprove(container, exercise);
                 break;
@@ -1494,7 +1513,8 @@ ${answers.message || ''}`;
             'identify': "💡 חפשו את החלק שגורם לכם להרגיש משהו.",
             'compare': "💡 דמיינו את עצמכם כלקוח - איזו גרסה הייתה גורמת לכם לעצור ולקרוא?",
             'improve': "💡 חפשו את האפשרות שמוסיפה רגש, ספציפיות או חיבור אישי.",
-            'match': "💡 חפשו את הקשר הלוגי בין העמודות - מה מתחבר למה?"
+            'match': "💡 חפשו את הקשר הלוגי בין העמודות - מה מתחבר למה?",
+            'scenario': "💡 דמיינו את עצמכם במצב הזה — מה הייתם עושים?"
         };
         return tips[exerciseType] || "";
     }
@@ -1518,7 +1538,7 @@ ${answers.message || ''}`;
                     ${optionsHtml}
                 </div>
                 <div class="mentor-tip">
-                    <img class="mentor-tip-icon" src="mentor-gal.png" alt="גל" />
+                    <span class="mentor-tip-icon">🧑‍🏫</span>
                     <span class="mentor-tip-text">${tip}</span>
                 </div>
             </div>
@@ -1533,6 +1553,28 @@ ${answers.message || ''}`;
             btn.classList.toggle('selected', i === index);
         });
         this.enableCheckButton();
+    }
+
+    renderScenario(container, exercise) {
+        const letters = ['א', 'ב', 'ג', 'ד'];
+        const optionsHtml = exercise.options.map((option, index) => `
+            <button class="option-btn" onclick="game.selectOption(${index})">
+                <span class="option-letter">${letters[index]}</span>
+                <span>${option}</span>
+            </button>
+        `).join('');
+
+        container.innerHTML = `
+            <button class="back-btn" onclick="game.exitLesson()">✕</button>
+            <div class="exercise-container">
+                <div class="exercise-type">תרחיש</div>
+                <div class="exercise-question">${exercise.question}</div>
+                ${exercise.context ? `<div class="scenario-context"><div class="scenario-context-label">📋 הקשר:</div><div class="scenario-context-text">${exercise.context}</div></div>` : ''}
+                <div class="options-list">
+                    ${optionsHtml}
+                </div>
+            </div>
+        `;
     }
 
     renderFillBlank(container, exercise) {
@@ -1553,7 +1595,7 @@ ${answers.message || ''}`;
                     <div class="word-bank">${wordsHtml}</div>
                 </div>
                 <div class="mentor-tip">
-                    <img class="mentor-tip-icon" src="mentor-gal.png" alt="גל" />
+                    <span class="mentor-tip-icon">🧑‍🏫</span>
                     <span class="mentor-tip-text">${tip}</span>
                 </div>
             </div>
@@ -1600,7 +1642,7 @@ ${answers.message || ''}`;
                     ${itemsHtml}
                 </div>
                 <div class="mentor-tip">
-                    <img class="mentor-tip-icon" src="mentor-gal.png" alt="גל" />
+                    <span class="mentor-tip-icon">🧑‍🏫</span>
                     <span class="mentor-tip-text">${tip}</span>
                 </div>
             </div>
@@ -1709,7 +1751,7 @@ ${answers.message || ''}`;
                 <div class="identify-instructions">סמנו את החלק הרלוונטי בטקסט</div>
                 <div class="identify-text" id="identify-text" onmouseup="game.handleTextSelection()" ontouchend="setTimeout(function(){game.handleTextSelection()}, 100)">${exercise.text}</div>
                 <div class="mentor-tip">
-                    <img class="mentor-tip-icon" src="mentor-gal.png" alt="גל" />
+                    <span class="mentor-tip-icon">🧑‍🏫</span>
                     <span class="mentor-tip-text">${tip}</span>
                 </div>
             </div>
@@ -1777,7 +1819,7 @@ ${answers.message || ''}`;
                     </div>
                 </div>
                 <div class="mentor-tip">
-                    <img class="mentor-tip-icon" src="mentor-gal.png" alt="גל" />
+                    <span class="mentor-tip-icon">🧑‍🏫</span>
                     <span class="mentor-tip-text">${tip}</span>
                 </div>
             </div>
@@ -1830,7 +1872,7 @@ ${answers.message || ''}`;
                     ${optionsHtml}
                 </div>
                 <div class="mentor-tip">
-                    <img class="mentor-tip-icon" src="mentor-gal.png" alt="גל" />
+                    <span class="mentor-tip-icon">🧑‍🏫</span>
                     <span class="mentor-tip-text">${tip}</span>
                 </div>
             </div>
@@ -1870,7 +1912,7 @@ ${answers.message || ''}`;
                     <div class="match-column">${rightHtml}</div>
                 </div>
                 <div class="mentor-tip">
-                    <img class="mentor-tip-icon" src="mentor-gal.png" alt="גל" />
+                    <span class="mentor-tip-icon">🧑‍🏫</span>
                     <span class="mentor-tip-text">${tip}</span>
                 </div>
             </div>
@@ -1970,6 +2012,10 @@ ${answers.message || ''}`;
             case 'compare':
                 isCorrect = this.selectedAnswer === exercise.correct;
                 this.showCompareFeedback(isCorrect, exercise);
+                break;
+            case 'scenario':
+                isCorrect = this.selectedAnswer === exercise.correct;
+                this.showMultipleChoiceFeedback(isCorrect, exercise);
                 break;
             case 'improve':
                 isCorrect = this.selectedAnswer === exercise.correct;

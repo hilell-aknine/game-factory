@@ -1331,7 +1331,10 @@ body {
     height: 34px;
     border-radius: 50%;
     flex-shrink: 0;
-    object-fit: cover;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border: 2px solid rgba(124, 92, 252, 0.25);
 }
 
@@ -2033,6 +2036,32 @@ body {
     color: var(--text-secondary);
     text-decoration: line-through;
     text-decoration-color: rgba(251, 113, 133, 0.4);
+}
+
+/* ═══════════════════════════════════════
+   Scenario Exercise
+   ═══════════════════════════════════════ */
+.scenario-context {
+    background: rgba(124, 92, 252, 0.06);
+    border: 1px solid rgba(124, 92, 252, 0.2);
+    border-radius: var(--r-md);
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.scenario-context-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+}
+
+.scenario-context-text {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text-secondary);
 }
 
 /* ═══════════════════════════════════════
