@@ -225,6 +225,78 @@ class AuthManager {
 }
 
 // ═══════════════════════════════════════
+// Gemini AI Mentor (Ram)
+// ═══════════════════════════════════════
+class GeminiMentor {
+    constructor() {
+        this.apiKey = 'AIzaSyDGVrc0sqFrsx7k5UZmMbNKZ6An813KEBw';
+        this.model = 'gemini-2.0-flash';
+        this.endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${this.model}:generateContent?key=${this.apiKey}`;
+        this.systemPrompt = `אתה רם, מנטור NLP חם, מעודד וידידותי במשחק לימודי בעברית.
+הנחיות:
+- דבר בעברית בלבד, בגובה העיניים, בגוף שני (את/ה)
+- תשובות קצרות — מקסימום 2-3 משפטים
+- השתמש בדוגמאות מהחיים ובמטאפורות
+- תמיד עודד, גם כשהתשובה שגויה — "אין כשלונות, רק משוב"
+- שלב מונחי NLP כשרלוונטי (ריפריימינג, עוגנים, סטייטים, מטא-מודל וכו')
+- אל תחזור על ההסבר שכבר ניתן — הוסף זווית חדשה או דוגמה`;
+    }
+
+    async ask(userMessage, context = '') {
+        try {
+            const messages = [];
+            if (context) {
+                messages.push({ role: 'user', parts: [{ text: this.systemPrompt + '\n\nהקשר: ' + context }] });
+                messages.push({ role: 'model', parts: [{ text: 'מבין, אני רם. אשמח לעזור!' }] });
+            } else {
+                messages.push({ role: 'user', parts: [{ text: this.systemPrompt }] });
+                messages.push({ role: 'model', parts: [{ text: 'מבין, אני רם. אשמח לעזור!' }] });
+            }
+            messages.push({ role: 'user', parts: [{ text: userMessage }] });
+
+            const res = await fetch(this.endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: messages,
+                    generationConfig: {
+                        temperature: 0.8,
+                        maxOutputTokens: 200,
+                        topP: 0.9
+                    }
+                })
+            });
+
+            if (!res.ok) return null;
+            const data = await res.json();
+            return data.candidates?.[0]?.content?.parts?.[0]?.text || null;
+        } catch (e) {
+            console.warn('Gemini API error:', e);
+            return null;
+        }
+    }
+
+    async getFeedback(exercise, isCorrect, selectedAnswer) {
+        const correctText = exercise.options ? exercise.options[exercise.correct] : '';
+        const selectedText = exercise.options && selectedAnswer !== null ? exercise.options[selectedAnswer] : '';
+        const prompt = isCorrect
+            ? `השחקן ענה נכון על שאלה: "${exercise.question}". התשובה: "${correctText}". תן טיפ קצר או תובנה מעניינת שמרחיבה את ההבנה.`
+            : `השחקן ענה שגוי. השאלה: "${exercise.question}". בחר: "${selectedText}" במקום "${correctText}". עודד אותו בקצרה והסבר בזווית אחרת מההסבר הרגיל.`;
+        return this.ask(prompt, `מודול: ${exercise.question}`);
+    }
+
+    async chat(userMessage, playerLevel, moduleName) {
+        const context = `השחקן ברמה ${playerLevel}, לומד כרגע: ${moduleName || 'NLP כללי'}`;
+        return this.ask(userMessage, context);
+    }
+
+    async coachPractice(stepTitle, userAnswer) {
+        const prompt = `השחקן כתב בתרגול חופשי (${stepTitle}): "${userAnswer}". תן משוב קצר ומעשי כמנטור NLP — מה טוב, ומה אפשר לחדד.`;
+        return this.ask(prompt);
+    }
+}
+
+// ═══════════════════════════════════════
 // Main Game Class
 // ═══════════════════════════════════════
 class StoryGame {
@@ -245,6 +317,7 @@ class StoryGame {
         // Managers
         this.sound = new SoundManager();
         this.authManager = new AuthManager(this);
+        this.gemini = new GeminiMentor();
 
         // Player data (loaded later)
         this.playerData = this.getDefaultPlayerData();
@@ -430,6 +503,9 @@ class StoryGame {
 
         // Update sound toggle
         document.getElementById('sound-toggle').textContent = this.sound.enabled ? '🔊' : '🔇';
+
+        // Show Ram chat FAB
+        document.getElementById('ram-chat-fab').style.display = 'flex';
 
         // Init game
         this.updateStreak();
@@ -1213,13 +1289,37 @@ class StoryGame {
         this.storyBuilderData.answers[stepId] = textarea.value;
     }
 
-    nextStoryStep() {
+    async nextStoryStep() {
         this.sound.play('click');
-        this.updateStoryAnswer(this.storySteps[this.storyBuilderData.currentStep].id);
+        const step = this.storySteps[this.storyBuilderData.currentStep];
+        this.updateStoryAnswer(step.id);
+
+        // Get AI coaching on what user wrote
+        const answer = this.storyBuilderData.answers[step.id];
+        if (answer && answer.trim().length > 10) {
+            this.showRamCoaching(step.title, answer);
+        }
+
         if (this.storyBuilderData.currentStep < this.storySteps.length - 1) {
             this.storyBuilderData.currentStep++;
             this.transitionTo(() => this.renderStoryBuilderStep());
         }
+    }
+
+    async showRamCoaching(stepTitle, userAnswer) {
+        const response = await this.gemini.coachPractice(stepTitle, userAnswer);
+        if (!response) return;
+
+        // Show as a toast notification
+        const toast = document.createElement('div');
+        toast.className = 'ram-coaching-toast';
+        toast.innerHTML = `<img src="mentor-ram.png" class="ram-toast-img" /><div class="ram-toast-text">${response}</div>`;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.classList.add('show'), 50);
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 400);
+        }, 6000);
     }
 
     prevStoryStep() {
@@ -2167,6 +2267,9 @@ ${answers.action || ''}`;
         document.getElementById('feedback-explanation').innerHTML = feedbackHtml;
         document.getElementById('feedback-btn').textContent = 'המשך';
 
+        // Get AI feedback from Ram (async, non-blocking)
+        this.getAIFeedback(exercise, isCorrect);
+
         // Streak fire pulse on correct
         if (isCorrect) {
             const streakEl = document.querySelector('.stat-item.streak');
@@ -2177,6 +2280,24 @@ ${answers.action || ''}`;
         }
 
         this.hideFooter();
+    }
+
+    async getAIFeedback(exercise, isCorrect) {
+        const explanationEl = document.getElementById('feedback-explanation');
+        if (!explanationEl) return;
+
+        // Add loading indicator
+        const aiDiv = document.createElement('div');
+        aiDiv.className = 'ai-feedback-container';
+        aiDiv.innerHTML = '<div class="ai-feedback-loading"><span class="ai-dot"></span><span class="ai-dot"></span><span class="ai-dot"></span> רם חושב...</div>';
+        explanationEl.appendChild(aiDiv);
+
+        const response = await this.gemini.getFeedback(exercise, isCorrect, this.selectedAnswer);
+        if (response && aiDiv.parentElement) {
+            aiDiv.innerHTML = `<div class="ai-feedback"><div class="ai-feedback-label">🧑‍🏫 רם אומר:</div><div class="ai-feedback-text">${response}</div></div>`;
+        } else if (aiDiv.parentElement) {
+            aiDiv.remove();
+        }
     }
 
     getSelectedAnswerText(exercise) {
@@ -2751,6 +2872,46 @@ ${answers.action || ''}`;
 
     disableCheckButton() {
         document.getElementById('check-btn').disabled = true;
+    }
+
+    // ═══════════════════════════════════════
+    // Ram Chat (AI)
+    // ═══════════════════════════════════════
+    toggleRamChat() {
+        const panel = document.getElementById('ram-chat-panel');
+        const isOpen = panel.style.display !== 'none';
+        panel.style.display = isOpen ? 'none' : 'flex';
+        if (!isOpen) {
+            document.getElementById('ram-chat-input').focus();
+        }
+    }
+
+    async sendRamChat() {
+        const input = document.getElementById('ram-chat-input');
+        const message = input.value.trim();
+        if (!message) return;
+
+        input.value = '';
+        const messagesEl = document.getElementById('ram-chat-messages');
+
+        // Add user message
+        messagesEl.innerHTML += `<div class="ram-msg ram-msg-user">${message}</div>`;
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+
+        // Add loading
+        const loadingId = 'ram-loading-' + Date.now();
+        messagesEl.innerHTML += `<div class="ram-msg ram-msg-ai ram-msg-loading" id="${loadingId}"><span class="ai-dot"></span><span class="ai-dot"></span><span class="ai-dot"></span></div>`;
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+
+        const moduleName = this.currentModule?.title || '';
+        const response = await this.gemini.chat(message, this.playerData.level, moduleName);
+
+        const loadingEl = document.getElementById(loadingId);
+        if (loadingEl) {
+            loadingEl.classList.remove('ram-msg-loading');
+            loadingEl.textContent = response || 'סליחה, לא הצלחתי לענות כרגע. נסו שוב!';
+        }
+        messagesEl.scrollTop = messagesEl.scrollHeight;
     }
 }
 

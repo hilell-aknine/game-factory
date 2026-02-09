@@ -193,6 +193,29 @@
         </div>
     </div>
 
+    <!-- Ask Ram Chat -->
+    <div class="ram-chat-fab" id="ram-chat-fab" onclick="game.toggleRamChat()" style="display:none;">
+        <img src="mentor-ram.png" alt="רם" class="ram-fab-img" />
+    </div>
+
+    <div class="ram-chat-panel" id="ram-chat-panel" style="display:none;">
+        <div class="ram-chat-header">
+            <img src="mentor-ram.png" alt="רם" class="ram-chat-avatar" />
+            <div>
+                <div class="ram-chat-name">שאל את רם</div>
+                <div class="ram-chat-status">מנטור NLP • AI</div>
+            </div>
+            <button class="ram-chat-close" onclick="game.toggleRamChat()">✕</button>
+        </div>
+        <div class="ram-chat-messages" id="ram-chat-messages">
+            <div class="ram-msg ram-msg-ai">היי! אני רם 🧑‍🏫 שאלו אותי כל שאלה על NLP ואשמח לעזור!</div>
+        </div>
+        <div class="ram-chat-input-area">
+            <input type="text" id="ram-chat-input" class="ram-chat-input" placeholder="שאלו אותי על NLP..." onkeydown="if(event.key==='Enter')game.sendRamChat()" />
+            <button class="ram-chat-send" onclick="game.sendRamChat()">➤</button>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="data.js"></script>
     <script src="game.js"></script>
