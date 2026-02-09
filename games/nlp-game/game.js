@@ -787,7 +787,7 @@ class StoryGame {
         return `
             <div class="mentor-container mentor-enter">
                 <div class="mentor-avatar mentor-${mood}">
-                    <img src="mentor-ram.png" alt="רם" onerror="this.style.display='none';this.parentElement.innerHTML='🧑‍🏫'" />
+                    <img src="mentor-ram.png" alt="רם" />
                 </div>
                 <div class="mentor-bubble">
                     ${showName ? '<div class="mentor-name">רם - המנטור שלך</div>' : ''}
