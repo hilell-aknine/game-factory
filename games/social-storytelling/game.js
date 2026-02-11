@@ -1898,7 +1898,7 @@ ${answers.message || ''}`;
 
         // If both selected, create a match
         if (this.matchState.selectedLeft !== null && this.matchState.selectedRight !== null) {
-            const colors = ['#7c5cfc', '#2dd4bf', '#f472b6', '#fbbf24', '#fb923c'];
+            const colors = ['#D4AF37', '#2F8592', '#3fb950', '#E0C55A', '#00606B'];
             const colorIndex = this.matchState.matches.length % colors.length;
             const color = colors[colorIndex];
 
