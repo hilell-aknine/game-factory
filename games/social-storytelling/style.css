@@ -237,19 +237,33 @@ body {
 .module-card::before {
     content: '';
     position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(212, 175, 55, 0.06), transparent 60%);
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    border-radius: var(--r-lg) var(--r-lg) 0 0;
     opacity: 0;
     transition: opacity 0.3s ease;
 }
 
-.module-card:hover {
-    border-color: var(--glass-border-hover);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+.module-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.06), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    border-radius: inherit;
 }
 
-.module-card:hover::before {
+.module-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+.module-card:hover::before,
+.module-card:hover::after {
     opacity: 1;
 }
 
@@ -361,9 +375,10 @@ body {
 }
 
 .lesson-item:hover {
-    background: var(--bg-hover);
-    border-color: var(--glass-border-hover);
-    transform: translateX(-4px);
+    background: var(--bg-overlay);
+    border-color: var(--gold);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
 }
 
 .lesson-item.completed {
@@ -433,6 +448,15 @@ body {
     border-radius: var(--r-xl);
     padding: 28px 24px;
     margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+}
+.exercise-container::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
 }
 
 .exercise-type {
@@ -839,6 +863,7 @@ body {
     z-index: 100;
     border-top-left-radius: var(--r-xl);
     border-top-right-radius: var(--r-xl);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.25);
 }
 
 .feedback-panel.show {
@@ -1189,8 +1214,8 @@ body {
 }
 
 .modal-content {
-    background: #1a1a28;
-    border: 1px solid var(--border-light);
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
     border-radius: var(--r-xl);
     padding: 32px;
     max-width: 380px;
@@ -1198,7 +1223,16 @@ body {
     text-align: center;
     transform: scale(0.9) translateY(20px);
     transition: transform 0.35s var(--ease-spring);
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+.modal-content::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
 }
 
 .modal-overlay.show .modal-content {
@@ -1211,8 +1245,9 @@ body {
 }
 
 .modal-title {
-    font-size: 22px;
-    font-weight: 800;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
     margin-bottom: 8px;
 }
 
@@ -1267,13 +1302,15 @@ body {
     background: var(--glass);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid var(--glass-border);
+    border: 1px solid rgba(212, 175, 55, 0.15);
     border-radius: var(--r-md);
     border-top-right-radius: 4px;
     padding: 14px 18px;
     position: relative;
     max-width: 100%;
     flex: 1;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s var(--ease-out);
 }
 
 .mentor-bubble::before {
@@ -1321,6 +1358,19 @@ body {
 .mentor-welcome {
     text-align: center;
     padding: 28px 20px;
+    background: linear-gradient(135deg, rgba(212,175,55,0.08), rgba(47,133,146,0.06));
+    border: 1px solid rgba(212,175,55,0.15);
+    border-radius: var(--r-xl);
+    position: relative;
+    margin-bottom: 16px;
+}
+.mentor-welcome::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    border-radius: var(--r-xl) var(--r-xl) 0 0;
 }
 
 .mentor-welcome .mentor-avatar {
@@ -2430,6 +2480,18 @@ main,
     width: 90%;
     padding: 40px 24px;
     text-align: center;
+    position: relative;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--r-xl);
+}
+.auth-container::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    border-radius: var(--r-xl) var(--r-xl) 0 0;
 }
 
 .auth-logo {
@@ -2525,8 +2587,8 @@ main,
 
 .auth-input:focus {
     outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15), inset 0 0 0 1px var(--gold);
 }
 
 .auth-input::placeholder {
@@ -2541,11 +2603,12 @@ main,
 .auth-submit-btn .btn-spinner {
     width: 20px;
     height: 20px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-top-color: white;
+    border: 2px solid rgba(212, 175, 55, 0.2);
+    border-top-color: var(--gold-dark);
     border-radius: 50%;
-    animation: spin 0.6s linear infinite;
+    animation: spin 0.8s linear infinite;
     position: absolute;
+    box-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
 }
 
 .auth-submit-btn.loading .btn-text {
@@ -2619,11 +2682,12 @@ main,
 .loading-spinner-large {
     width: 48px;
     height: 48px;
-    border: 3px solid var(--border-light);
-    border-top-color: var(--primary);
+    border: 3px solid rgba(212, 175, 55, 0.2);
+    border-top-color: var(--gold);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
     margin: 0 auto 16px;
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
 }
 
 .loading-text {
