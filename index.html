@@ -4,265 +4,568 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>מפעל משחקים | Game Factory</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&family=Frank+Ruhl+Libre:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            --primary: #7c5cfc;
-            --primary-light: #a78bfa;
-            --primary-dark: #6344e0;
-            --bg: #0a0a12;
-            --surface: rgba(255, 255, 255, 0.04);
-            --border: rgba(255, 255, 255, 0.08);
-            --text: #f1f0f5;
-            --text-muted: rgba(255, 255, 255, 0.5);
+            --deep-petrol: #003B46;
+            --petrol-900: #002A32;
+            --muted-teal: #00606B;
+            --dusty-aqua: #2F8592;
+            --aqua-500: #3A9BA8;
+            --frost-white: #E8F1F2;
+            --gold: #D4AF37;
+            --gold-light: #E0C55A;
+            --gold-dark: #B8960E;
+            --gold-soft: #EBDA8A;
+            --gold-tint: #FBF5E0;
+            --gold-glow: rgba(212,175,55,0.2);
+            --bg-dark: #0f1419;
+            --bg-card: #1a1f2e;
+            --bg-card-hover: #242b3d;
+            --border-color: #2d3548;
+            --text-primary: #ffffff;
+            --text-secondary: #8b949e;
+            --text-muted: #6e7681;
+            --success: #3fb950;
+            --font-display: 'Frank Ruhl Libre', serif;
+            --font-body: 'Heebo', sans-serif;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --transition-spring: 400ms cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         body {
-            font-family: 'Heebo', sans-serif;
-            background: var(--bg);
-            color: var(--text);
+            font-family: var(--font-body);
+            background: var(--bg-dark);
+            color: var(--text-primary);
             min-height: 100vh;
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Animated background */
-        body::before {
+        /* === AMBIENT BACKGROUND === */
+        .ambient {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+        }
+        .ambient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.12;
+        }
+        .ambient-orb:nth-child(1) {
+            width: 600px; height: 600px;
+            background: var(--gold);
+            top: -10%; right: -5%;
+            animation: orbFloat1 18s ease-in-out infinite alternate;
+        }
+        .ambient-orb:nth-child(2) {
+            width: 500px; height: 500px;
+            background: var(--dusty-aqua);
+            bottom: -15%; left: -10%;
+            animation: orbFloat2 22s ease-in-out infinite alternate;
+        }
+        .ambient-orb:nth-child(3) {
+            width: 350px; height: 350px;
+            background: var(--muted-teal);
+            top: 50%; left: 40%;
+            animation: orbFloat3 15s ease-in-out infinite alternate;
+        }
+        @keyframes orbFloat1 { 0% { transform: translate(0, 0); } 100% { transform: translate(-60px, 40px); } }
+        @keyframes orbFloat2 { 0% { transform: translate(0, 0); } 100% { transform: translate(50px, -30px); } }
+        @keyframes orbFloat3 { 0% { transform: translate(0, 0); } 100% { transform: translate(-40px, -50px); } }
+
+        /* === NOISE TEXTURE === */
+        body::after {
             content: '';
             position: fixed;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(ellipse at 30% 20%, rgba(124, 92, 252, 0.08) 0%, transparent 50%),
-                        radial-gradient(ellipse at 70% 80%, rgba(45, 212, 191, 0.06) 0%, transparent 50%);
-            animation: bg-drift 20s ease-in-out infinite alternate;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none;
             z-index: -1;
         }
 
-        @keyframes bg-drift {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(-5%, -3%); }
-        }
-
+        /* === CONTAINER === */
         .container {
-            max-width: 900px;
+            width: 100%;
+            max-width: 1000px;
             margin: 0 auto;
-            padding: 0 24px;
+            padding: 0 2rem;
         }
 
-        /* Hero */
+        /* === HERO === */
         .hero {
             text-align: center;
-            padding: 80px 24px 40px;
+            padding: 5rem 2rem 3rem;
+            position: relative;
         }
-
-        .hero-emoji {
-            font-size: 72px;
-            display: block;
-            margin-bottom: 16px;
-            animation: float 3s ease-in-out infinite;
+        .hero-icon-wrap {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, rgba(212,175,55,0.15), rgba(47,133,146,0.15));
+            border: 1px solid rgba(212,175,55,0.25);
+            border-radius: var(--radius-xl);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--gold);
+            animation: heroIconPulse 3s ease-in-out infinite;
         }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+        @keyframes heroIconPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(212,175,55,0.15); }
+            50% { box-shadow: 0 0 30px 8px rgba(212,175,55,0.1); }
         }
-
         .hero h1 {
-            font-size: 42px;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--primary-light), #2dd4bf);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 12px;
-        }
-
-        .hero p {
-            font-size: 18px;
-            color: var(--text-muted);
-            max-width: 500px;
-            margin: 0 auto;
-            line-height: 1.6;
-        }
-
-        /* Games Grid */
-        .section-title {
-            font-size: 22px;
+            font-family: var(--font-display);
+            font-size: 3.2rem;
             font-weight: 700;
-            margin-bottom: 24px;
-            padding-right: 4px;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.75rem;
+        }
+        .hero h1 .highlight {
+            color: var(--gold);
+        }
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 480px;
+            margin: 0 auto;
+            line-height: 1.7;
         }
 
+        /* === STATS BAR === */
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 2.5rem;
+            margin-top: 2.5rem;
+            padding: 1.25rem 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            max-width: 520px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .stat-block {
+            text-align: center;
+        }
+        .stat-number {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gold);
+            line-height: 1;
+        }
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.3rem;
+        }
+
+        /* === SECTION === */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.75rem;
+        }
+        .section-header i {
+            color: var(--gold);
+            font-size: 1.1rem;
+        }
+        .section-title {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+        /* === GAMES GRID === */
+        .games-section {
+            padding: 2rem 0 4rem;
+        }
         .games-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 20px;
-            padding-bottom: 60px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
         }
 
+        /* === GAME CARD === */
         .game-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 28px 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            padding: 2rem 1.75rem;
             text-decoration: none;
-            color: var(--text);
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            color: var(--text-primary);
+            transition: all var(--transition-spring);
             position: relative;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
-
-        .game-card:hover {
-            transform: translateY(-4px) scale(1.02);
-            border-color: var(--primary);
-            box-shadow: 0 8px 32px rgba(124, 92, 252, 0.15);
-        }
-
-        .game-card::after {
+        .game-card::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
+            top: 0; left: 0; right: 0;
             height: 3px;
-            background: linear-gradient(90deg, var(--primary), #2dd4bf);
+            background: linear-gradient(135deg, var(--card-accent, var(--gold)), var(--card-accent-light, var(--gold-light)));
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
             opacity: 0;
-            transition: opacity 0.3s;
+            transition: opacity 0.3s ease;
         }
-
-        .game-card:hover::after {
+        .game-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--card-accent, var(--gold));
+            box-shadow: 0 16px 50px rgba(0, 0, 0, 0.35);
+        }
+        .game-card:hover::before {
             opacity: 1;
         }
 
-        .game-card-emoji {
-            font-size: 40px;
-            margin-bottom: 12px;
-            display: block;
-        }
+        /* Card accent colors */
+        .game-card[data-accent="gold"] { --card-accent: #D4AF37; --card-accent-light: #E0C55A; --card-accent-bg: rgba(212,175,55,0.12); }
+        .game-card[data-accent="teal"] { --card-accent: #2F8592; --card-accent-light: #3A9BA8; --card-accent-bg: rgba(47,133,146,0.12); }
+        .game-card[data-accent="green"] { --card-accent: #3fb950; --card-accent-light: #4dcb65; --card-accent-bg: rgba(63,185,80,0.12); }
+        .game-card[data-accent="purple"] { --card-accent: #8B5CF6; --card-accent-light: #A78BFA; --card-accent-bg: rgba(139,92,246,0.12); }
 
+        .card-icon-wrap {
+            width: 56px;
+            height: 56px;
+            border-radius: var(--radius-lg);
+            background: var(--card-accent-bg, rgba(212,175,55,0.12));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.25rem;
+            font-size: 1.4rem;
+            color: var(--card-accent, var(--gold));
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .game-card:hover .card-icon-wrap {
+            transform: scale(1.08);
+            box-shadow: 0 4px 15px var(--card-accent-bg, rgba(212,175,55,0.15));
+        }
         .game-card h3 {
-            font-size: 20px;
+            font-family: var(--font-body);
+            font-size: 1.25rem;
             font-weight: 700;
-            margin-bottom: 8px;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+        .game-card .card-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            flex: 1;
+        }
+        .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 1.25rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+        .card-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-live {
+            background: rgba(63,185,80,0.12);
+            color: var(--success);
+        }
+        .badge-soon {
+            background: rgba(212,175,55,0.12);
+            color: var(--gold);
+        }
+        .card-arrow {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-md);
+            background: rgba(255,255,255,0.04);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+        .game-card:hover .card-arrow {
+            background: var(--card-accent-bg, rgba(212,175,55,0.12));
+            color: var(--card-accent, var(--gold));
+            transform: translateX(-4px);
         }
 
-        .game-card p {
-            font-size: 14px;
+        /* === ADD CARD === */
+        .game-card-add {
+            border: 2px dashed var(--border-color);
+            background: transparent;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: 240px;
+            cursor: default;
+        }
+        .game-card-add:hover {
+            border-color: rgba(212,175,55,0.3);
+            transform: none;
+            box-shadow: none;
+        }
+        .game-card-add::before { display: none; }
+        .add-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: var(--radius-lg);
+            background: rgba(255,255,255,0.04);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.4rem;
+            color: var(--text-muted);
+        }
+        .game-card-add p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        .game-card-add code {
+            display: inline-block;
+            margin-top: 0.5rem;
+            padding: 0.2rem 0.6rem;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 0.8rem;
+            color: var(--gold);
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        /* === FEATURES === */
+        .features-section {
+            padding: 0 0 4rem;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.25rem;
+        }
+        .feature-item {
+            text-align: center;
+            padding: 1.5rem 1rem;
+            border-radius: var(--radius-lg);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+        }
+        .feature-icon {
+            width: 44px;
+            height: 44px;
+            margin: 0 auto 0.75rem;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+        .feature-item:nth-child(1) .feature-icon { background: rgba(212,175,55,0.12); color: var(--gold); }
+        .feature-item:nth-child(2) .feature-icon { background: rgba(47,133,146,0.12); color: var(--dusty-aqua); }
+        .feature-item:nth-child(3) .feature-icon { background: rgba(63,185,80,0.12); color: var(--success); }
+        .feature-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        .feature-desc {
+            font-size: 0.8rem;
             color: var(--text-muted);
             line-height: 1.5;
         }
 
-        .game-card .badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-top: 12px;
-        }
-
-        .badge-live {
-            background: rgba(52, 211, 153, 0.15);
-            color: #34d399;
-        }
-
-        .badge-soon {
-            background: rgba(251, 191, 36, 0.15);
-            color: #fbbf24;
-        }
-
-        /* Add game card */
-        .game-card-add {
-            border: 2px dashed var(--border);
-            background: transparent;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 200px;
-            cursor: default;
-        }
-
-        .game-card-add:hover {
-            border-color: var(--primary-light);
-            transform: none;
-            box-shadow: none;
-        }
-
-        .game-card-add .plus {
-            font-size: 48px;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-        }
-
-        .game-card-add p {
-            text-align: center;
-        }
-
-        /* Footer */
+        /* === FOOTER === */
         .footer {
             text-align: center;
-            padding: 40px 24px;
+            padding: 2.5rem 2rem;
             color: var(--text-muted);
-            font-size: 14px;
-            border-top: 1px solid var(--border);
-            margin-top: 40px;
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border-color);
+        }
+        .footer a {
+            color: var(--gold);
+            text-decoration: none;
+        }
+        .footer a:hover { text-decoration: underline; }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 768px) {
+            .hero { padding: 3.5rem 1.5rem 2rem; }
+            .hero h1 { font-size: 2.2rem; }
+            .hero p { font-size: 1rem; }
+            .stats-bar { gap: 1.5rem; padding: 1rem 1.25rem; flex-wrap: wrap; }
+            .stat-number { font-size: 1.5rem; }
+            .games-grid { grid-template-columns: 1fr; }
+            .features-grid { grid-template-columns: 1fr; }
+            .container { padding: 0 1.25rem; }
+        }
+
+        /* === REDUCED MOTION === */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="hero">
-        <span class="hero-emoji">🏭</span>
-        <h1>מפעל משחקים</h1>
-        <p>משחקים לימודיים אינטראקטיביים בסגנון Duolingo — צרו, שחקו ולמדו</p>
+    <!-- Ambient Background -->
+    <div class="ambient">
+        <div class="ambient-orb"></div>
+        <div class="ambient-orb"></div>
+        <div class="ambient-orb"></div>
     </div>
 
-    <div class="container">
-        <h2 class="section-title">המשחקים שלנו</h2>
-        <div class="games-grid">
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-icon-wrap" data-aos="zoom-in" data-aos-duration="600">
+            <i class="fa-solid fa-gamepad"></i>
+        </div>
+        <h1 data-aos="fade-up" data-aos-delay="100">מפעל <span class="highlight">המשחקים</span></h1>
+        <p data-aos="fade-up" data-aos-delay="200">משחקים לימודיים אינטראקטיביים בסגנון Duolingo — בחרו משחק, שחקו ולמדו</p>
 
-            <a href="games/story-game/" class="game-card">
-                <span class="game-card-emoji">🎯</span>
-                <h3>סטורי גיים</h3>
-                <p>למדו ליצור סיפורים שמושכים לקוחות — למטפלים, מאמנים ויזמים</p>
-                <span class="badge badge-live">פעיל</span>
-            </a>
+        <div class="stats-bar" data-aos="fade-up" data-aos-delay="300">
+            <div class="stat-block">
+                <div class="stat-number">4</div>
+                <div class="stat-label">משחקים</div>
+            </div>
+            <div class="stat-block">
+                <div class="stat-number">200+</div>
+                <div class="stat-label">תרגילים</div>
+            </div>
+            <div class="stat-block">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">חינם</div>
+            </div>
+        </div>
+    </section>
 
-            <a href="games/nlp-game/" class="game-card">
-                <span class="game-card-emoji">🧠</span>
-                <h3>NLP Master</h3>
-                <p>הדרך לשליטה במוח — קורס NLP פרקטישנר אינטראקטיבי</p>
-                <span class="badge badge-live">פעיל</span>
-            </a>
-
-            <a href="games/social-storytelling/" class="game-card">
-                <span class="game-card-emoji">📱</span>
-                <h3>סטורי סושיאל</h3>
-                <p>סטוריטלינג לרשתות חברתיות — הוקים, מבנים, ותוכן שעוצר את הסקרול</p>
-                <span class="badge badge-live">פעיל</span>
-            </a>
-
-            <a href="games/strengths-finder/" class="game-card">
-                <span class="game-card-emoji">💪</span>
-                <h3>מאסטר החוזקות</h3>
-                <p>גלו את 34 כישרונות גאלופ ולמדו למקסם את הפוטנציאל שלכם — מבוסס על StrengthsFinder 2.0</p>
-                <span class="badge badge-live">פעיל</span>
-            </a>
-
-            <div class="game-card game-card-add">
-                <span class="plus">+</span>
-                <p>המשחק הבא שלך כאן...<br>השתמש בסקיל <code>edu-game-creator</code></p>
+    <!-- Games -->
+    <section class="games-section">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <i class="fa-solid fa-fire"></i>
+                <h2 class="section-title">המשחקים שלנו</h2>
             </div>
 
-        </div>
-    </div>
+            <div class="games-grid">
 
-    <div class="footer">
-        מפעל משחקים &copy; 2025 | נבנה עם Claude Code
-    </div>
+                <a href="games/story-game/" class="game-card" data-accent="gold" data-aos="fade-up" data-aos-delay="0" data-tilt data-tilt-max="4" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.08">
+                    <div class="card-icon-wrap">
+                        <i class="fa-solid fa-bullseye"></i>
+                    </div>
+                    <h3>סטורי גיים</h3>
+                    <p class="card-desc">למדו ליצור סיפורים שמושכים לקוחות — למטפלים, מאמנים ויזמים</p>
+                    <div class="card-footer">
+                        <span class="card-badge badge-live"><i class="fa-solid fa-circle" style="font-size:6px;margin-left:4px;vertical-align:middle;"></i> פעיל</span>
+                        <div class="card-arrow"><i class="fa-solid fa-arrow-left"></i></div>
+                    </div>
+                </a>
+
+                <a href="games/nlp-game/" class="game-card" data-accent="teal" data-aos="fade-up" data-aos-delay="100" data-tilt data-tilt-max="4" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.08">
+                    <div class="card-icon-wrap">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+                    <h3>NLP Master</h3>
+                    <p class="card-desc">הדרך לשליטה במוח — קורס NLP פרקטישנר אינטראקטיבי</p>
+                    <div class="card-footer">
+                        <span class="card-badge badge-live"><i class="fa-solid fa-circle" style="font-size:6px;margin-left:4px;vertical-align:middle;"></i> פעיל</span>
+                        <div class="card-arrow"><i class="fa-solid fa-arrow-left"></i></div>
+                    </div>
+                </a>
+
+                <a href="games/social-storytelling/" class="game-card" data-accent="purple" data-aos="fade-up" data-aos-delay="200" data-tilt data-tilt-max="4" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.08">
+                    <div class="card-icon-wrap">
+                        <i class="fa-solid fa-mobile-screen-button"></i>
+                    </div>
+                    <h3>סטורי סושיאל</h3>
+                    <p class="card-desc">סטוריטלינג לרשתות חברתיות — הוקים, מבנים, ותוכן שעוצר את הסקרול</p>
+                    <div class="card-footer">
+                        <span class="card-badge badge-live"><i class="fa-solid fa-circle" style="font-size:6px;margin-left:4px;vertical-align:middle;"></i> פעיל</span>
+                        <div class="card-arrow"><i class="fa-solid fa-arrow-left"></i></div>
+                    </div>
+                </a>
+
+                <a href="games/strengths-finder/" class="game-card" data-accent="green" data-aos="fade-up" data-aos-delay="300" data-tilt data-tilt-max="4" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.08">
+                    <div class="card-icon-wrap">
+                        <i class="fa-solid fa-hand-fist"></i>
+                    </div>
+                    <h3>מאסטר החוזקות</h3>
+                    <p class="card-desc">גלו את 34 כישרונות גאלופ ולמדו למקסם את הפוטנציאל שלכם — מבוסס על StrengthsFinder 2.0</p>
+                    <div class="card-footer">
+                        <span class="card-badge badge-live"><i class="fa-solid fa-circle" style="font-size:6px;margin-left:4px;vertical-align:middle;"></i> פעיל</span>
+                        <div class="card-arrow"><i class="fa-solid fa-arrow-left"></i></div>
+                    </div>
+                </a>
+
+                <div class="game-card game-card-add" data-aos="fade-up" data-aos-delay="400">
+                    <div class="add-icon">
+                        <i class="fa-solid fa-plus"></i>
+                    </div>
+                    <p>המשחק הבא שלך כאן...<br><code>edu-game-creator</code></p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features-section">
+        <div class="container">
+            <div class="features-grid">
+                <div class="feature-item" data-aos="fade-up" data-aos-delay="0">
+                    <div class="feature-icon"><i class="fa-solid fa-trophy"></i></div>
+                    <div class="feature-title">גיימיפיקציה מלאה</div>
+                    <div class="feature-desc">XP, לבבות, סטריקים והישגים</div>
+                </div>
+                <div class="feature-item" data-aos="fade-up" data-aos-delay="100">
+                    <div class="feature-icon"><i class="fa-solid fa-cloud"></i></div>
+                    <div class="feature-title">שמירה בענן</div>
+                    <div class="feature-desc">ההתקדמות נשמרת ב-Supabase</div>
+                </div>
+                <div class="feature-item" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-icon"><i class="fa-solid fa-mobile-screen"></i></div>
+                    <div class="feature-title">מותאם מובייל</div>
+                    <div class="feature-desc">עובד מושלם בכל מכשיר</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        מפעל משחקים &copy; 2025 | נבנה עם <a href="https://claude.ai" target="_blank" rel="noopener">Claude Code</a>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            AOS.init({ duration: 700, once: true, offset: 40 });
+        });
+    </script>
 </body>
 </html>
