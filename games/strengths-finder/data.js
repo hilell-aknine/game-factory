@@ -2,7 +2,7 @@ const MODULES = [
     {
         id: 1,
         title: "מבוא - גלה את החוזקות שלך",
-        description: "הכירו את הגישה המהפכנית של קליפטון לזיהוי וחיזוק כישרונות טבעיים",
+        description: "הכירו את הגישה לזיהוי וחיזוק כישרונות טבעיים",
         icon: "🌟",
         lessons: [
             {
@@ -11,7 +11,7 @@ const MODULES = [
                 exercises: [
                     {
                         type: "multiple-choice",
-                        question: "מהי הגישה הרווחת בחברה לגבי הדרך להצלחה, לפי הספר?",
+                        question: "דמיינו מנהל שאומר לעובד: 'אתה חייב לשפר את החולשות שלך כדי להתקדם'. איזו גישה מקובלת הוא מבטא?",
                         options: [
                             "יש להתמקד בחוזקות ולהתעלם מחולשות",
                             "יש לעבוד קשה על שיפור החולשות כדי להגיע לשלמות",
@@ -19,17 +19,17 @@ const MODULES = [
                             "יש להימנע מאתגרים שדורשים את החולשות שלנו"
                         ],
                         correct: 1,
-                        explanation: "החברה מאמינה שכדי להגיע לגדולה, יש לעבוד על שיפור החולשות. זוהי המנטליות הנפוצה שקליפטון וצוותו רצו לשנות.",
+                        explanation: "הגישה המקובלת בחברה היא לעבוד על שיפור החולשות כדי להגיע לגדולה. גישת החוזקות מציעה חלופה: להתמקד במה שאתה כבר טוב בו.",
                         wrongExplanations: [
-                            "זוהי הגישה שהספר מציע כחלופה, לא הגישה הרווחת בחברה",
+                            "זוהי הגישה שמוצעת כחלופה, לא הגישה הרווחת בחברה",
                             null,
-                            "הספר לא מדבר על איזון - הוא מדבר על התמקדות מוחלטת בחוזקות",
-                            "הימנעות מאתגרים אינה הגישה הרווחת שהספר מתאר"
+                            "הגישה לא מדברת על איזון - היא מדברת על התמקדות מוחלטת בחוזקות",
+                            "הימנעות מאתגרים אינה הגישה הרווחת שמתוארת כאן"
                         ]
                     },
                     {
                         type: "multiple-choice",
-                        question: "מהי הבעיה המרכזית שקליפטון מצא במערכת החינוך?",
+                        question: "מהי הבעיה המרכזית בגישת מערכת החינוך המסורתית?",
                         options: [
                             "המורים אינם מקצועיים מספיק",
                             "אין מספיק שעות לימוד בשבוע",
@@ -37,21 +37,21 @@ const MODULES = [
                             "התלמידים לא מתאמצים מספיק בלימודים"
                         ],
                         correct: 2,
-                        explanation: "קליפטון טוען שמערכת החינוך מכניסה תלמידים לתבנית שבה הם חייבים להיות מעוגלים וטובים בכל דבר, במקום לתת להם להתמקד בכישרונות הייחודיים שלהם.",
+                        explanation: "מערכת החינוך המסורתית מכניסה תלמידים לתבנית שבה הם חייבים להיות מעוגלים וטובים בכל דבר, במקום לתת להם להתמקד בכישרונות הייחודיים שלהם.",
                         wrongExplanations: [
-                            "הביקורת של קליפטון אינה מכוונת למורים אלא למבנה המערכת עצמה",
+                            "הביקורת אינה מכוונת למורים אלא למבנה המערכת עצמה",
                             "הנושא אינו כמות שעות הלימוד אלא הגישה החינוכית",
                             null,
-                            "קליפטון לא מאשים את התלמידים אלא את המערכת שמכוונת אותם לטפל בחולשות"
+                            "הגישה לא מאשימה את התלמידים אלא את המערכת שמכוונת אותם לטפל בחולשות"
                         ]
                     },
                     {
                         type: "fill-blank",
-                        question: "השלימו את המשפט לפי עקרון הספר:",
+                        question: "השלימו את המשפט:",
                         template: "במקום לומר לאנשים שהם יכולים להיות מי שהם רוצים, עדיף לומר להם שהם יכולים להיות ___ ממה שהם כבר",
                         options: ["שונים", "מדהימים יותר", "חכמים יותר", "עשירים יותר"],
                         correct: 1,
-                        explanation: "הספר מציע לשנות את הנרטיב: במקום להבטיח שאפשר להיות כל דבר, להראות שאפשר להפוך למדהימים יותר על ידי חיזוק החוזקות הקיימות."
+                        explanation: "העיקרון המנחה הוא לשנות את הנרטיב: במקום להבטיח שאפשר להיות כל דבר, להראות שאפשר להפוך למדהימים יותר על ידי חיזוק החוזקות הקיימות."
                     },
                     {
                         type: "order",
@@ -77,7 +77,7 @@ const MODULES = [
                             text: "כדי להצליח, עליך לגלות את הכישרונות הטבעיים שלך ולהשקיע בהם את מירב האנרגיה"
                         },
                         correct: 1,
-                        explanation: "גישת StrengthsFinder מבוססת על ההבנה שהשקעה בכישרונות טבעיים מניבה תוצאות טובות בהרבה מניסיון לתקן חולשות. זו המהפכה שקליפטון הוביל."
+                        explanation: "גישת החוזקות מבוססת על ההבנה שהשקעה בכישרונות טבעיים מניבה תוצאות טובות בהרבה מניסיון לתקן חולשות. זוהי תפנית חשיבתית משמעותית."
                     },
                     {
                         type: "identify",
@@ -120,7 +120,7 @@ const MODULES = [
                             "הם מתרגלים לכך ומפסיקים להרגיש אי נוחות"
                         ],
                         correct: 2,
-                        explanation: "הספר מתאר תמונה חמורה: אנשים מחוץ לאזור החוזקות מאבדים ביטחון, מתקשים לעבוד עם אחרים, מייצרים פחות ועלולים לפתח דיכאון וחרדה.",
+                        explanation: "מחקרים מראים תמונה חמורה: אנשים מחוץ לאזור החוזקות מאבדים ביטחון, מתקשים לעבוד עם אחרים, מייצרים פחות ועלולים לפתח דיכאון וחרדה.",
                         wrongExplanations: [
                             "ההשלכות רחבות הרבה יותר מסתם ירידה ביעילות - הן כוללות פגיעה בריאותית ורגשית",
                             "ההפך הוא הנכון - עבודה מחוץ לאזור החוזקות מעכבת התפתחות",
@@ -151,7 +151,7 @@ const MODULES = [
                         wrongExplanations: [
                             "הגישה אינה מחפשת איזון אלא התמקדות ברורה בחוזקות עם ניהול מינימלי של חולשות",
                             null,
-                            "הספר לא אומר להתעלם מחולשות אלא לנהל אותן ברמה שמשלימה את החוזקות",
+                            "הגישה לא אומרת להתעלם מחולשות אלא לנהל אותן ברמה שמשלימה את החוזקות",
                             "מדובר בהתמקדות בכישרונות טבעיים, לא בבחירת דברים קלים"
                         ]
                     },
@@ -178,7 +178,7 @@ const MODULES = [
                             text: "העבודה מאתגרת אבל מספקת, כי היא גורמת לצמיחה אישית"
                         },
                         correct: 0,
-                        explanation: "לפי הספר, עבודה מחוץ לאזור החוזקות הופכת לנטל, פוגעת ביחסים עם קולגות ולקוחות, ומובילה לתוצאות נחותות - לא לצמיחה."
+                        explanation: "לפי הגישה, עבודה מחוץ לאזור החוזקות הופכת לנטל, פוגעת ביחסים עם קולגות ולקוחות, ומובילה לתוצאות נחותות - לא לצמיחה."
                     }
                 ]
             },
@@ -188,7 +188,7 @@ const MODULES = [
                 exercises: [
                     {
                         type: "multiple-choice",
-                        question: "מדוע צוות קליפטון הגביל את רשימת הכישרונות ל-34 נושאים?",
+                        question: "מדוע רשימת הכישרונות הוגבלה ל-34 נושאים בלבד?",
                         options: [
                             "כי אלה הכישרונות היחידים שקיימים",
                             "כי רצו שהרשימה תהיה ידידותית למשתמש וניתנת לעיכול",
@@ -196,11 +196,11 @@ const MODULES = [
                             "כי 34 הוא מספר מדעי מוכח"
                         ],
                         correct: 1,
-                        explanation: "הצוות ידע שיש הרבה יותר כישרונות, אבל בחר לרכז 34 נושאים נפוצים כדי שהרשימה תהיה נגישה, ברורה וקלה להבנה עבור כל משתמש.",
+                        explanation: "יש הרבה יותר כישרונות, אבל 34 נושאים נפוצים נבחרו כדי שהרשימה תהיה נגישה, ברורה וקלה להבנה עבור כל משתמש.",
                         wrongExplanations: [
-                            "הספר מציין במפורש שיש הרבה יותר כישרונות שלא נכללו ברשימה",
+                            "המחקר מציין שיש הרבה יותר כישרונות שלא נכללו ברשימה - 34 נבחרו לנגישות",
                             null,
-                            "הצוות בחר להגביל את הרשימה מתוך שיקולי נגישות, לא מחוסר ממצאים",
+                            "הרשימה הוגבלה מתוך שיקולי נגישות, לא מחוסר ממצאים",
                             "המספר 34 נבחר מסיבות פרקטיות, לא מדעיות"
                         ]
                     },
@@ -264,11 +264,11 @@ const MODULES = [
                             "יש להימנע מכל מצב שדורש את החולשות שלך"
                         ],
                         correct: 1,
-                        explanation: "הספר מלמד שאין להתעלם מחולשות, אלא להכיר בהן ולנהל אותן ברמה מינימלית, או למצוא שותף שהחולשה שלך היא החוזקה שלו.",
+                        explanation: "הגישה מלמדת שאין להתעלם מחולשות, אלא להכיר בהן ולנהל אותן ברמה מינימלית, או למצוא שותף שהחולשה שלך היא החוזקה שלו.",
                         wrongExplanations: [
                             "הגישה מדגישה השקעה עיקרית בחוזקות, לא חלוקה שווה בין חוזקות לחולשות",
                             null,
-                            "הספר טוען שניסיון להפוך חולשה לחוזקה הוא בזבוז זמן ואנרגיה",
+                            "הגישה טוענת שניסיון להפוך חולשה לחוזקה הוא בזבוז זמן ואנרגיה",
                             "הימנעות מוחלטת אינה אפשרית - הגישה היא ניהול חכם של חולשות"
                         ]
                     }
@@ -300,8 +300,8 @@ const MODULES = [
                         wrongExplanations: [
                             "המשיג רוצה להשיג משהו כל יום - לא רק בפרויקטים גדולים",
                             null,
-                            "הספר לא מתאר את המשיג כמי שמעדיף לעבוד לבד",
-                            "המשיג מתמקד בהשגת דברים, אך הספר מזהיר שלפעמים האיכות עלולה להיפגע"
+                            "הגישה לא מתארת את המשיג כמי שמעדיף לעבוד לבד",
+                            "המשיג מתמקד בהשגת דברים, אך חשוב לשים לב שלפעמים האיכות עלולה להיפגע"
                         ]
                     },
                     {
@@ -400,7 +400,7 @@ const MODULES = [
                             text: "הם נוקשים ולא מסוגלים להתמודד עם שינויים בלתי צפויים"
                         },
                         correct: 0,
-                        explanation: "כישרון המשמעת הוא על שליטה ומבנה שמעניקים תחושת ביטחון ופרודוקטיביות, לא על נוקשות. הספר אף ממליץ להכין תוכניות מגירה."
+                        explanation: "כישרון המשמעת הוא על שליטה ומבנה שמעניקים תחושת ביטחון ופרודוקטיביות, לא על נוקשות. חשוב גם להכין תוכניות מגירה למקרים בלתי צפויים."
                     },
                     {
                         type: "match",
@@ -507,12 +507,12 @@ const MODULES = [
                             "אנשי אחריות צריכים להפסיק להאשים את עצמם ולהאשים אחרים"
                         ],
                         correct: 1,
-                        explanation: "הספר מזהיר שאנשי אחריות עלולים להאפיל על אחרים ולמנוע מהם לגדול. עליהם ללמוד מתי לסגת כדי שכל חברי הצוות יוכלו ללמוד ולהתפתח.",
+                        explanation: "חשוב לזכור שאנשי אחריות עלולים להאפיל על אחרים ולמנוע מהם לגדול. עליהם ללמוד מתי לסגת כדי שכל חברי הצוות יוכלו ללמוד ולהתפתח.",
                         wrongExplanations: [
                             "הבידוד אינו הפתרון - הם צריכים לעבוד בצוות אבל לדעת מתי לתת לאחרים לקחת אחריות",
                             null,
                             "הבעיה אינה בצורך בשליטה אלא בנטייה לקחת על עצמם יותר מדי ולמנוע מאחרים לגדול",
-                            "הספר לא ממליץ להאשים אחרים - הוא ממליץ לאזן בין אחריות אישית לאפשרות צמיחה לאחרים"
+                            "הגישה לא ממליצה להאשים אחרים - היא ממליצה לאזן בין אחריות אישית לאפשרות צמיחה לאחרים"
                         ]
                     },
                     {
@@ -555,7 +555,7 @@ const MODULES = [
                         wrongExplanations: [
                             "ההבדל אינו במהירות אלא במוקד: התחלה מול סיום",
                             null,
-                            "הספר לא מתאר הבדל כזה - שניהם יכולים לעבוד בצוות",
+                            "הגישה לא מתארת הבדל כזה - שניהם יכולים לעבוד בצוות",
                             "יש הבדל מהותי בין השניים במוקד הפעולה שלהם"
                         ]
                     },
@@ -603,7 +603,7 @@ const MODULES = [
                             "מפעילים צריכים לפעול רק כשכולם בצוות מסכימים"
                         ],
                         correct: 1,
-                        explanation: "הספר ממליץ למפעילים להיות רגישים לאנשים סביבם, במיוחד לזהירים (Deliberative), ולהסביר את הסיבות לפעולה לפני שהם מתחילים.",
+                        explanation: "ההמלצה למפעילים היא להיות רגישים לאנשים סביבם, במיוחד לזהירים (Deliberative), ולהסביר את הסיבות לפעולה לפני שהם מתחילים.",
                         wrongExplanations: [
                             "תכנון מוגזם סותר את טבעם של מפעילים - הם צריכים לאזן, לא להפסיק",
                             null,
@@ -653,7 +653,7 @@ const MODULES = [
                         template: "ממקסמים רואים את החוזקות של אחרים ועוזרים להם ___ במקום לתקן חולשות",
                         options: ["להתחרות", "למקסם את החוזקות", "להסתיר חולשות", "לעבוד קשה יותר"],
                         correct: 1,
-                        explanation: "הממקסם מאמין שהשקעה בחוזקות היא ההשקעה הטובה ביותר. הם עוזרים לאחרים למקסם את הכישרונות הטבעיים שלהם - בדיוק העיקרון המרכזי של הספר."
+                        explanation: "הממקסם מאמין שהשקעה בחוזקות היא ההשקעה הטובה ביותר. הם עוזרים לאחרים למקסם את הכישרונות הטבעיים שלהם - בדיוק העיקרון המרכזי של גישת החוזקות."
                     },
                     {
                         type: "compare",
@@ -689,7 +689,7 @@ const MODULES = [
                     },
                     {
                         type: "order",
-                        question: "סדרו כיצד תחרותי יכול לחזק את הכישרון שלו לפי הספר:",
+                        question: "סדרו כיצד תחרותי יכול לחזק את הכישרון שלו:",
                         items: [
                             "לנטר ביצועים ולהבין מדוע ניצח",
                             "לצאת ולהתחרות עם אחרים",
@@ -767,12 +767,12 @@ const MODULES = [
                             "אנשי משמעותיות צריכים לחקות אנשים מפורסמים"
                         ],
                         correct: 1,
-                        explanation: "הספר ממליץ לאנשי משמעותיות לתכנן מראש את סוג ההכרה שהם רוצים, כך שידעו על מה להתמקד ומתי לומר לא להזדמנויות שלא מתאימות.",
+                        explanation: "ההמלצה לאנשי משמעותיות היא לתכנן מראש את סוג ההכרה שהם רוצים, כך שידעו על מה להתמקד ומתי לומר לא להזדמנויות שלא מתאימות.",
                         wrongExplanations: [
                             "הימנעות מחשיפה סותרת את מהות הכישרון של משמעותיות",
                             null,
                             "הכישרון שלהם הוא לשאוף להכרה - אין טעם להסתפק במועט",
-                            "הספר ממליץ לפתח דרך ייחודית, לא לחקות אחרים"
+                            "ההמלצה היא לפתח דרך ייחודית, לא לחקות אחרים"
                         ]
                     },
                     {
@@ -858,7 +858,7 @@ const MODULES = [
                             "אנשי גמישות צריכים להפסיק להיות גמישים בגיל מבוגר"
                         ],
                         correct: 1,
-                        explanation: "הספר מזהיר שאנשים עלולים לנצל את הגמישות שלהם בגלל שהם יודעים שהגמישן יטפל בכל בעיה. עליהם ללמוד מתי לומר לא כדי לשמור על היעדים שלהם.",
+                        explanation: "חשוב לזכור שאנשים עלולים לנצל את הגמישות שלהם בגלל שהם יודעים שהגמישן יטפל בכל בעיה. עליהם ללמוד מתי לומר לא כדי לשמור על היעדים שלהם.",
                         wrongExplanations: [
                             "הגמישות היא הכוח שלהם - אין צורך להפוך לקשיחים, רק להגן על עצמם",
                             null,
@@ -886,7 +886,7 @@ const MODULES = [
                 exercises: [
                     {
                         type: "multiple-choice",
-                        question: "מה ההבדל בין אמפתיה לסימפתיה לפי הספר?",
+                        question: "מה ההבדל בין אמפתיה לסימפתיה?",
                         options: [
                             "אין הבדל - שתיהן אותו דבר",
                             "סימפתיה חזקה יותר מאמפתיה",
@@ -896,8 +896,8 @@ const MODULES = [
                         correct: 2,
                         explanation: "אמפתיה אינה הסכמה עם רגשות האחר - היא הבנה עמוקה של הפרספקטיבה שלו. אנשי אמפתיה עוזרים לאחרים למצוא את המילים הנכונות לביטוי רגשותיהם.",
                         wrongExplanations: [
-                            "הספר מבחין בבירור בין אמפתיה לסימפתיה",
-                            "הספר מציג את האמפתיה ככישרון ייחודי שונה מסימפתיה, לא חלש ממנה",
+                            "חשוב להבחין בבירור בין אמפתיה לסימפתיה",
+                            "אמפתיה היא כישרון ייחודי שונה מסימפתיה, לא חלש ממנה",
                             null,
                             "אמפתיה מתייחסת לכל סוגי הרגשות, לא רק לשליליים"
                         ]
@@ -953,7 +953,7 @@ const MODULES = [
                             "אנשי הרמוניה צריכים לוותר על הדעה שלהם תמיד"
                         ],
                         correct: 1,
-                        explanation: "הספר ממליץ שאנשי הרמוניה ידעו מתי ויכוח עדיין בריא ומתי הוא הופך מזיק, ושישתמשו באינטואיציה שלהם כדי להוביל את השיחה לכיוון מעשי.",
+                        explanation: "ההמלצה לאנשי הרמוניה היא לדעת מתי ויכוח עדיין בריא ומתי הוא הופך מזיק, ולהשתמש באינטואיציה שלהם כדי להוביל את השיחה לכיוון מעשי.",
                         wrongExplanations: [
                             "אגרסיביות סותרת את הכישרון הטבעי שלהם - הם צריכים להישאר שלווים אבל אסרטיביים",
                             null,
@@ -1113,12 +1113,12 @@ const MODULES = [
                             "אנליטיים צריכים לשנות את האישיות שלהם"
                         ],
                         correct: 1,
-                        explanation: "הספר מציין שאנליטיים עלולים להיתפס כפוגעניים כי הם מאתגרים טענות. הפתרון הוא תקשורת טובה יותר - להסביר שהם רוצים שהטיעונים יהיו מוצקים.",
+                        explanation: "חשוב לציין שאנליטיים עלולים להיתפס כפוגעניים כי הם מאתגרים טענות. הפתרון הוא תקשורת טובה יותר - להסביר שהם רוצים שהטיעונים יהיו מוצקים.",
                         wrongExplanations: [
                             "התעלמות מנתונים סותרת את הכישרון הטבעי שלהם",
                             null,
                             "אתגור הוא החוזקה שלהם - אין צורך להפסיק, רק לתקשר טוב יותר",
-                            "הספר לא דורש שינוי אישיות אלא שיפור בתקשורת"
+                            "הגישה לא דורשת שינוי אישיות אלא שיפור בתקשורת"
                         ]
                     },
                     {
@@ -1126,7 +1126,7 @@ const MODULES = [
                         question: "סמנו את החלק שמתאר כיצד עתידנים יכולים לחזק את הכישרון שלהם:",
                         text: "עתידנים מדמיינים עתיד טוב יותר. כדי לחזק את החזון עליהם לקרוא על מדע ומחקר שיהפכו את הדמיון למשכנע יותר. גם ספרות בדיונית עוזרת.",
                         correctRange: [33, 100],
-                        explanation: "הספר ממליץ לעתידנים לקרוא על מדע ומחקר כדי שהחזון שלהם יהיה מבוסס על דוגמאות קונקרטיות ונתונים, מה שהופך אותו למשכנע יותר."
+                        explanation: "ההמלצה לעתידנים היא לקרוא על מדע ומחקר כדי שהחזון שלהם יהיה מבוסס על דוגמאות קונקרטיות ונתונים, מה שהופך אותו למשכנע יותר."
                     }
                 ]
             },
@@ -1196,7 +1196,7 @@ const MODULES = [
                             "אנשי קלט צריכים למחוק מידע ישן כל חודש"
                         ],
                         correct: 1,
-                        explanation: "הספר ממליץ לאנשי קלט למצוא מערכת ארגון שתהפוך את המידע לנגיש, וגם לשתף את הידע - כי ידע שנשאר באחסון לא מועיל לאף אחד.",
+                        explanation: "ההמלצה לאנשי קלט היא למצוא מערכת ארגון שתהפוך את המידע לנגיש, וגם לשתף את הידע - כי ידע שנשאר באחסון לא מועיל לאף אחד.",
                         wrongExplanations: [
                             "איסוף מידע הוא הכישרון הטבעי שלהם - אין צורך להפסיק, רק לארגן",
                             null,
@@ -1224,7 +1224,7 @@ const MODULES = [
                 exercises: [
                     {
                         type: "multiple-choice",
-                        question: "מה הדבר החשוב ביותר עבור הלומד (Learner) - לפי הספר?",
+                        question: "מה הדבר החשוב ביותר עבור הלומד (Learner)?",
                         options: [
                             "התוצאה הסופית של הלמידה",
                             "התעודה או ההסמכה שמקבלים בסוף",
@@ -1291,7 +1291,7 @@ const MODULES = [
                             "לומדים צריכים ללמד אחרים במקום ללמוד בעצמם"
                         ],
                         correct: 1,
-                        explanation: "הספר ממליץ ללומדים לעקוב אחרי ההתקדמות ולנהל את הזמן - כי ההתלהבות מלמידה עלולה לגרום להזנחת דברים חשובים אחרים.",
+                        explanation: "ההמלצה ללומדים היא לעקוב אחרי ההתקדמות ולנהל את הזמן - כי ההתלהבות מלמידה עלולה לגרום להזנחת דברים חשובים אחרים.",
                         wrongExplanations: [
                             "הלמידה היא הכישרון שלהם - אין סיבה להפסיק, רק לאזן",
                             null,
