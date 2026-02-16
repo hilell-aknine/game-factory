@@ -108,16 +108,16 @@
             position: relative;
         }
         .hero-icon-wrap {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 1.5rem;
+            width: 96px;
+            height: 96px;
+            margin: 0 auto 1.75rem;
             background: linear-gradient(135deg, rgba(212,175,55,0.15), rgba(47,133,146,0.15));
             border: 1px solid rgba(212,175,55,0.25);
             border-radius: var(--radius-xl);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
+            font-size: 2.4rem;
             color: var(--gold);
             animation: heroIconPulse 3s ease-in-out infinite;
         }
@@ -409,16 +409,106 @@
         }
         .footer a:hover { text-decoration: underline; }
 
-        /* === RESPONSIVE === */
+        /* === FOCUS & KEYBOARD NAV === */
+        *:focus-visible {
+            outline: 2px solid var(--gold);
+            outline-offset: 3px;
+            border-radius: var(--radius-md);
+        }
+        .game-card:focus-visible {
+            outline-offset: 4px;
+            transform: translateY(-6px);
+            border-color: var(--card-accent, var(--gold));
+            box-shadow: 0 16px 50px rgba(0, 0, 0, 0.35);
+        }
+        .game-card:focus-visible::before {
+            opacity: 1;
+        }
+        .game-card:focus-visible .card-arrow {
+            background: var(--card-accent-bg, rgba(212,175,55,0.12));
+            color: var(--card-accent, var(--gold));
+            transform: translateX(-4px);
+        }
+        .skip-link {
+            position: absolute;
+            top: -100%;
+            right: 1rem;
+            padding: 0.75rem 1.25rem;
+            background: var(--gold);
+            color: var(--bg-dark);
+            font-weight: 700;
+            border-radius: var(--radius-md);
+            z-index: 999;
+            font-size: 0.9rem;
+            transition: top 0.2s ease;
+        }
+        .skip-link:focus {
+            top: 1rem;
+        }
+
+        /* === RESPONSIVE - TABLET (768px) === */
         @media (max-width: 768px) {
             .hero { padding: 3.5rem 1.5rem 2rem; }
-            .hero h1 { font-size: 2.2rem; }
+            .hero h1 { font-size: 2.4rem; }
             .hero p { font-size: 1rem; }
+            .hero-icon-wrap { width: 72px; height: 72px; font-size: 1.75rem; }
             .stats-bar { gap: 1.5rem; padding: 1rem 1.25rem; flex-wrap: wrap; }
             .stat-number { font-size: 1.5rem; }
-            .games-grid { grid-template-columns: 1fr; }
-            .features-grid { grid-template-columns: 1fr; }
+            .games-grid { grid-template-columns: repeat(2, 1fr); }
+            .features-grid { grid-template-columns: 1fr; gap: 1rem; }
             .container { padding: 0 1.25rem; }
+            .section-title { font-size: 1.4rem; }
+            .card-arrow { width: 44px; height: 44px; font-size: 0.9rem; }
+        }
+
+        /* === RESPONSIVE - MOBILE (480px) === */
+        @media (max-width: 480px) {
+            .hero { padding: 2.5rem 1rem 1.5rem; }
+            .hero h1 { font-size: 2rem; }
+            .hero p { font-size: 0.9rem; line-height: 1.6; }
+            .hero-icon-wrap { width: 64px; height: 64px; font-size: 1.5rem; margin-bottom: 1rem; }
+            .stats-bar {
+                gap: 1rem;
+                padding: 0.85rem 1rem;
+                max-width: 100%;
+            }
+            .stat-number { font-size: 1.3rem; }
+            .stat-label { font-size: 0.75rem; }
+            .games-grid { grid-template-columns: 1fr; gap: 1rem; }
+            .game-card { padding: 1.5rem 1.25rem; }
+            .card-icon-wrap { width: 48px; height: 48px; font-size: 1.2rem; margin-bottom: 1rem; }
+            .game-card h3 { font-size: 1.15rem; }
+            .game-card .card-desc { font-size: 0.85rem; }
+            .card-arrow { width: 44px; height: 44px; font-size: 0.9rem; }
+            .card-badge { padding: 0.3rem 0.75rem; font-size: 0.7rem; min-height: 28px; display: flex; align-items: center; }
+            .game-card-add { min-height: 180px; }
+            .features-grid { grid-template-columns: 1fr; gap: 0.75rem; }
+            .feature-item { padding: 1.25rem 1rem; text-align: right; display: flex; flex-direction: row; align-items: center; gap: 1rem; }
+            .feature-icon { margin: 0; flex-shrink: 0; min-width: 44px; min-height: 44px; }
+            .feature-item .feature-content { text-align: right; }
+            .section-header { margin-bottom: 1.25rem; }
+            .section-title { font-size: 1.3rem; }
+            .container { padding: 0 1rem; }
+            .footer { padding: 2rem 1rem; font-size: 0.8rem; }
+        }
+
+        /* === RESPONSIVE - SMALL MOBILE (360px) === */
+        @media (max-width: 360px) {
+            .hero h1 { font-size: 1.75rem; }
+            .hero p { font-size: 0.85rem; }
+            .stats-bar { gap: 0.75rem; padding: 0.75rem; }
+            .stat-number { font-size: 1.15rem; }
+            .game-card { padding: 1.25rem 1rem; }
+            .game-card h3 { font-size: 1.05rem; }
+        }
+
+        /* === TOUCH DEVICES === */
+        @media (hover: none) and (pointer: coarse) {
+            .game-card:hover { transform: none; box-shadow: none; }
+            .game-card:hover::before { opacity: 0; }
+            .game-card:active { transform: scale(0.98); }
+            .game-card:active::before { opacity: 1; }
+            .card-arrow { width: 44px; height: 44px; }
         }
 
         /* === REDUCED MOTION === */
@@ -427,20 +517,24 @@
                 animation-duration: 0.01ms !important;
                 transition-duration: 0.01ms !important;
             }
+            [data-aos] { opacity: 1 !important; transform: none !important; }
         }
     </style>
 </head>
 <body>
+    <!-- Skip to main content (a11y) -->
+    <a href="#games" class="skip-link">דלג לתוכן הראשי</a>
+
     <!-- Ambient Background -->
-    <div class="ambient">
+    <div class="ambient" aria-hidden="true">
         <div class="ambient-orb"></div>
         <div class="ambient-orb"></div>
         <div class="ambient-orb"></div>
     </div>
 
     <!-- Hero -->
-    <section class="hero">
-        <div class="hero-icon-wrap" data-aos="zoom-in" data-aos-duration="600">
+    <header class="hero" role="banner">
+        <div class="hero-icon-wrap" data-aos="zoom-in" data-aos-duration="600" aria-hidden="true">
             <i class="fa-solid fa-gamepad"></i>
         </div>
         <h1 data-aos="fade-up" data-aos-delay="100">מפעל <span class="highlight">המשחקים</span></h1>
@@ -460,63 +554,64 @@
                 <div class="stat-label">חינם</div>
             </div>
         </div>
-    </section>
+    </header>
 
     <!-- Games -->
-    <section class="games-section">
+    <main>
+    <section class="games-section" id="games" aria-label="המשחקים שלנו">
         <div class="container">
             <div class="section-header" data-aos="fade-up">
-                <i class="fa-solid fa-fire"></i>
+                <i class="fa-solid fa-fire" aria-hidden="true"></i>
                 <h2 class="section-title">המשחקים שלנו</h2>
             </div>
 
             <div class="games-grid">
 
-                <a href="games/story-game/" class="game-card" data-accent="gold" data-aos="fade-up" data-aos-delay="0" data-tilt data-tilt-max="4" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.08">
-                    <div class="card-icon-wrap">
+                <a href="games/story-game/" class="game-card" data-accent="gold" data-aos="fade-up" data-aos-delay="0" data-tilt data-tilt-max="4" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.08" aria-label="סטורי גיים — למדו ליצור סיפורים שמושכים לקוחות">
+                    <div class="card-icon-wrap" aria-hidden="true">
                         <i class="fa-solid fa-bullseye"></i>
                     </div>
                     <h3>סטורי גיים</h3>
                     <p class="card-desc">למדו ליצור סיפורים שמושכים לקוחות — למטפלים, מאמנים ויזמים</p>
                     <div class="card-footer">
-                        <span class="card-badge badge-live"><i class="fa-solid fa-circle" style="font-size:6px;margin-left:4px;vertical-align:middle;"></i> פעיל</span>
-                        <div class="card-arrow"><i class="fa-solid fa-arrow-left"></i></div>
+                        <span class="card-badge badge-live"><i class="fa-solid fa-circle" style="font-size:6px;margin-left:4px;vertical-align:middle;" aria-hidden="true"></i> פעיל</span>
+                        <div class="card-arrow" aria-hidden="true"><i class="fa-solid fa-arrow-left"></i></div>
                     </div>
                 </a>
 
-                <a href="games/nlp-game/" class="game-card" data-accent="teal" data-aos="fade-up" data-aos-delay="100" data-tilt data-tilt-max="4" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.08">
-                    <div class="card-icon-wrap">
+                <a href="games/nlp-game/" class="game-card" data-accent="teal" data-aos="fade-up" data-aos-delay="100" data-tilt data-tilt-max="4" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.08" aria-label="NLP Master — קורס NLP פרקטישנר אינטראקטיבי">
+                    <div class="card-icon-wrap" aria-hidden="true">
                         <i class="fa-solid fa-brain"></i>
                     </div>
                     <h3>NLP Master</h3>
                     <p class="card-desc">הדרך לשליטה במוח — קורס NLP פרקטישנר אינטראקטיבי</p>
                     <div class="card-footer">
-                        <span class="card-badge badge-live"><i class="fa-solid fa-circle" style="font-size:6px;margin-left:4px;vertical-align:middle;"></i> פעיל</span>
-                        <div class="card-arrow"><i class="fa-solid fa-arrow-left"></i></div>
+                        <span class="card-badge badge-live"><i class="fa-solid fa-circle" style="font-size:6px;margin-left:4px;vertical-align:middle;" aria-hidden="true"></i> פעיל</span>
+                        <div class="card-arrow" aria-hidden="true"><i class="fa-solid fa-arrow-left"></i></div>
                     </div>
                 </a>
 
-                <a href="games/social-storytelling/" class="game-card" data-accent="purple" data-aos="fade-up" data-aos-delay="200" data-tilt data-tilt-max="4" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.08">
-                    <div class="card-icon-wrap">
+                <a href="games/social-storytelling/" class="game-card" data-accent="purple" data-aos="fade-up" data-aos-delay="200" data-tilt data-tilt-max="4" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.08" aria-label="סטורי סושיאל — סטוריטלינג לרשתות חברתיות">
+                    <div class="card-icon-wrap" aria-hidden="true">
                         <i class="fa-solid fa-mobile-screen-button"></i>
                     </div>
                     <h3>סטורי סושיאל</h3>
                     <p class="card-desc">סטוריטלינג לרשתות חברתיות — הוקים, מבנים, ותוכן שעוצר את הסקרול</p>
                     <div class="card-footer">
-                        <span class="card-badge badge-live"><i class="fa-solid fa-circle" style="font-size:6px;margin-left:4px;vertical-align:middle;"></i> פעיל</span>
-                        <div class="card-arrow"><i class="fa-solid fa-arrow-left"></i></div>
+                        <span class="card-badge badge-live"><i class="fa-solid fa-circle" style="font-size:6px;margin-left:4px;vertical-align:middle;" aria-hidden="true"></i> פעיל</span>
+                        <div class="card-arrow" aria-hidden="true"><i class="fa-solid fa-arrow-left"></i></div>
                     </div>
                 </a>
 
-                <a href="games/strengths-finder/" class="game-card" data-accent="green" data-aos="fade-up" data-aos-delay="300" data-tilt data-tilt-max="4" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.08">
-                    <div class="card-icon-wrap">
+                <a href="games/strengths-finder/" class="game-card" data-accent="green" data-aos="fade-up" data-aos-delay="300" data-tilt data-tilt-max="4" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.08" aria-label="מאסטר החוזקות — גלו את 34 כישרונות גאלופ">
+                    <div class="card-icon-wrap" aria-hidden="true">
                         <i class="fa-solid fa-hand-fist"></i>
                     </div>
                     <h3>מאסטר החוזקות</h3>
                     <p class="card-desc">גלו את 34 כישרונות גאלופ ולמדו למקסם את הפוטנציאל שלכם — מבוסס על StrengthsFinder 2.0</p>
                     <div class="card-footer">
-                        <span class="card-badge badge-live"><i class="fa-solid fa-circle" style="font-size:6px;margin-left:4px;vertical-align:middle;"></i> פעיל</span>
-                        <div class="card-arrow"><i class="fa-solid fa-arrow-left"></i></div>
+                        <span class="card-badge badge-live"><i class="fa-solid fa-circle" style="font-size:6px;margin-left:4px;vertical-align:middle;" aria-hidden="true"></i> פעיל</span>
+                        <div class="card-arrow" aria-hidden="true"><i class="fa-solid fa-arrow-left"></i></div>
                     </div>
                 </a>
 
@@ -532,31 +627,38 @@
     </section>
 
     <!-- Features -->
-    <section class="features-section">
+    <section class="features-section" aria-label="תכונות">
         <div class="container">
             <div class="features-grid">
                 <div class="feature-item" data-aos="fade-up" data-aos-delay="0">
-                    <div class="feature-icon"><i class="fa-solid fa-trophy"></i></div>
-                    <div class="feature-title">גיימיפיקציה מלאה</div>
-                    <div class="feature-desc">XP, לבבות, סטריקים והישגים</div>
+                    <div class="feature-icon" aria-hidden="true"><i class="fa-solid fa-trophy"></i></div>
+                    <div class="feature-content">
+                        <div class="feature-title">גיימיפיקציה מלאה</div>
+                        <div class="feature-desc">XP, לבבות, סטריקים והישגים</div>
+                    </div>
                 </div>
                 <div class="feature-item" data-aos="fade-up" data-aos-delay="100">
-                    <div class="feature-icon"><i class="fa-solid fa-cloud"></i></div>
-                    <div class="feature-title">שמירה בענן</div>
-                    <div class="feature-desc">ההתקדמות נשמרת ב-Supabase</div>
+                    <div class="feature-icon" aria-hidden="true"><i class="fa-solid fa-cloud"></i></div>
+                    <div class="feature-content">
+                        <div class="feature-title">שמירה בענן</div>
+                        <div class="feature-desc">ההתקדמות נשמרת ב-Supabase</div>
+                    </div>
                 </div>
                 <div class="feature-item" data-aos="fade-up" data-aos-delay="200">
-                    <div class="feature-icon"><i class="fa-solid fa-mobile-screen"></i></div>
-                    <div class="feature-title">מותאם מובייל</div>
-                    <div class="feature-desc">עובד מושלם בכל מכשיר</div>
+                    <div class="feature-icon" aria-hidden="true"><i class="fa-solid fa-mobile-screen"></i></div>
+                    <div class="feature-content">
+                        <div class="feature-title">מותאם מובייל</div>
+                        <div class="feature-desc">עובד מושלם בכל מכשיר</div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
+    </main>
 
     <!-- Footer -->
     <footer class="footer">
-        מפעל משחקים &copy; 2025 | נבנה עם <a href="https://claude.ai" target="_blank" rel="noopener">Claude Code</a>
+        מפעל משחקים &copy; 2026 | נבנה עם <a href="https://claude.ai" target="_blank" rel="noopener">Claude Code</a>
     </footer>
 
     <!-- Scripts -->
@@ -565,6 +667,12 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             AOS.init({ duration: 700, once: true, offset: 40 });
+            // Disable tilt on touch devices
+            if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+                document.querySelectorAll('[data-tilt]').forEach(el => {
+                    if (el.vanillaTilt) el.vanillaTilt.destroy();
+                });
+            }
         });
     </script>
 </body>
