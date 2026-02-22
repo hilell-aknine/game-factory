@@ -864,7 +864,23 @@
             }
             [data-aos] { opacity: 1 !important; transform: none !important; }
         }
+        /* User indicator */
+        .user-indicator {
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.35rem 0.85rem;
+            background: rgba(212,175,55,0.1);
+            border: 1px solid rgba(212,175,55,0.2);
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            color: var(--gold);
+            font-weight: 500;
+        }
+        .user-indicator.show { display: flex; }
+        .user-indicator i { font-size: 0.75rem; }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <a href="#games" class="skip-link">דלג לתוכן הראשי</a>
@@ -889,7 +905,8 @@
         <button class="hamburger" id="hamburger" onclick="toggleMobileNav()" aria-label="תפריט ניווט" aria-expanded="false">
             <span></span><span></span><span></span>
         </button>
-        <a href="#games" class="nav-cta nav-cta-desktop">התחילו לשחק</a>
+        <div class="user-indicator" id="user-indicator"><i class="fa-solid fa-circle-check"></i> <span id="user-email"></span></div>
+        <a href="#games" class="nav-cta nav-cta-desktop" id="nav-cta">התחילו לשחק</a>
     </nav>
 
     <!-- Hero -->
@@ -1546,7 +1563,7 @@
             btn.setAttribute('aria-expanded', links.classList.contains('show'));
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             AOS.init({ duration: 700, once: true, offset: 40 });
 
             // Sticky nav scroll effect
@@ -1624,6 +1641,22 @@
                 });
             }, { threshold: 0.5 });
             counters.forEach(c => observer.observe(c));
+
+            // Check Supabase auth — show user indicator if logged in
+            try {
+                const sb = supabase.createClient(
+                    'https://vrjrnnmbaankcococoeu.supabase.co',
+                    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZyanJubm1iYWFua2NvY29jb2V1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA2MDU0MTgsImV4cCI6MjA4NjE4MTQxOH0.MtBgdNjF7EyCdK0IHA9aBWZpSTk1q3IajJMuerO7vno'
+                );
+                const { data } = await sb.auth.getSession();
+                if (data?.session?.user) {
+                    const email = data.session.user.email || '';
+                    const name = email.split('@')[0];
+                    document.getElementById('user-email').textContent = name;
+                    document.getElementById('user-indicator').classList.add('show');
+                    document.getElementById('nav-cta').textContent = 'המשיכו לשחק';
+                }
+            } catch(e) {}
         });
     </script>
 </body>

@@ -3,8 +3,8 @@
 // ═══════════════════════════════════════
 // Supabase Init
 // ═══════════════════════════════════════
-const SUPABASE_URL = 'https://eimcudmlfjlyxjyrdcgc.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpbWN1ZG1sZmpseXhqeXJkY2djIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk0MTA5MDYsImV4cCI6MjA4NDk4NjkwNn0.ESXViZ0DZxopHxHNuC6vRn3iIZz1KZkQcXwgLhK_nQw';
+const SUPABASE_URL = 'https://vrjrnnmbaankcococoeu.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZyanJubm1iYWFua2NvY29jb2V1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA2MDU0MTgsImV4cCI6MjA4NjE4MTQxOH0.MtBgdNjF7EyCdK0IHA9aBWZpSTk1q3IajJMuerO7vno';
 const _supabase = (SUPABASE_URL && SUPABASE_ANON_KEY)
     ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
     : {
@@ -461,15 +461,15 @@ class StoryGame {
     // Auth Flow
     // ═══════════════════════════════════════
     async initAuth() {
-        // Show loading
-        document.getElementById('auth-screen').style.display = 'flex';
-
-        // Check existing session
+        // Loading screen is already visible from HTML — no auth flash for returning users
         const user = await this.authManager.checkSession();
         if (user) {
             this.onAuthSuccess(user);
+            return;
         }
-        // else: auth screen stays visible, wait for user action
+        // No session — hide loading, show auth
+        document.getElementById('loading-screen').style.display = 'none';
+        document.getElementById('auth-screen').style.display = 'flex';
 
         // Listen for auth state changes (handles Google redirect)
         _supabase.auth.onAuthStateChange(async (event, session) => {

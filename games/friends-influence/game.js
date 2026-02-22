@@ -388,15 +388,15 @@ class StoryGame {
     // Auth Flow
     // ═══════════════════════════════════════
     async initAuth() {
-        // Show loading
-        document.getElementById('auth-screen').style.display = 'flex';
-
-        // Check existing session
+        // Loading screen is already visible from HTML — no auth flash for returning users
         const user = await this.authManager.checkSession();
         if (user) {
             this.onAuthSuccess(user);
+            return;
         }
-        // else: auth screen stays visible, wait for user action
+        // No session — hide loading, show auth
+        document.getElementById('loading-screen').style.display = 'none';
+        document.getElementById('auth-screen').style.display = 'flex';
 
         // Listen for auth state changes (handles Google redirect)
         _supabase.auth.onAuthStateChange(async (event, session) => {
@@ -1921,7 +1921,7 @@ ${answers.message || ''}`;
 
         // If both selected, create a match
         if (this.matchState.selectedLeft !== null && this.matchState.selectedRight !== null) {
-            const colors = ['#7c5cfc', '#2dd4bf', '#f472b6', '#fbbf24', '#fb923c'];
+            const colors = ['#D4AF37', '#2F8592', '#f472b6', '#E0C55A', '#fb923c'];
             const colorIndex = this.matchState.matches.length % colors.length;
             const color = colors[colorIndex];
 
