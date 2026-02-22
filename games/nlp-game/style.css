@@ -1118,6 +1118,8 @@ main,
     left: 0;
     right: 0;
     padding: var(--space-6) var(--space-5);
+    max-height: 55vh;
+    overflow-y: auto;
     transform: translateY(100%);
     transition: transform 0.35s var(--ease-out);
     z-index: var(--z-feedback);
@@ -2517,6 +2519,25 @@ main,
     padding: 36px 28px 28px;
     text-align: center;
     animation: bounceIn 0.5s var(--ease-spring);
+    position: relative;
+}
+
+.onboarding-skip {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.5);
+    font-size: 0.85rem;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 4px 8px;
+    transition: color 0.2s;
+}
+
+.onboarding-skip:hover {
+    color: rgba(255,255,255,0.9);
 }
 
 .onboarding-step { margin-bottom: var(--space-6); }

@@ -5,7 +5,23 @@
 // ═══════════════════════════════════════
 const SUPABASE_URL = 'https://vrjrnnmbaankcococoeu.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZyanJubm1iYWFua2NvY29jb2V1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA2MDU0MTgsImV4cCI6MjA4NjE4MTQxOH0.MtBgdNjF7EyCdK0IHA9aBWZpSTk1q3IajJMuerO7vno';
-const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const _supabase = (SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase)
+    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+    : {
+        auth: {
+            getSession: async () => ({ data: { session: null } }),
+            signInWithOAuth: async () => ({ error: { message: 'לא הוגדר חיבור לשרת. השתמשו במצב אורח.' } }),
+            signInWithPassword: async () => ({ error: { message: 'לא הוגדר חיבור לשרת. השתמשו במצב אורח.' } }),
+            signUp: async () => ({ error: { message: 'לא הוגדר חיבור לשרת. השתמשו במצב אורח.' } }),
+            signOut: async () => ({}),
+            onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } })
+        },
+        from: () => ({
+            select: () => ({ eq: () => ({ single: async () => ({ data: null, error: true }) }) }),
+            upsert: async () => ({}),
+            update: () => ({ eq: async () => ({}) })
+        })
+    };
 
 const HEART_RECOVERY_MINUTES = 20;
 
@@ -715,6 +731,13 @@ class StoryGame {
         } else {
             this.renderOnboardingStep();
         }
+    }
+
+    skipOnboarding() {
+        document.getElementById('onboarding-overlay').style.display = 'none';
+        this.playerData.onboardingComplete = true;
+        this.savePlayerData();
+        this.renderHomeScreen();
     }
 
     // ═══════════════════════════════════════
@@ -1715,7 +1738,7 @@ ${answers.message || ''}`;
             </div>
         `;
 
-        this.enableCheckButton();
+        // Don't enable check button until text is selected
     }
 
     handleTextSelection() {
@@ -2321,10 +2344,8 @@ ${answers.message || ''}`;
     loseHeart() {
         if (this.playerData.hearts > 0) {
             this.playerData.hearts--;
-            // Set the recovery timestamp
-            if (!this.playerData.lastHeartLost || this.playerData.hearts === this.playerData.maxHearts - 1) {
-                this.playerData.lastHeartLost = new Date().toISOString();
-            }
+            // Set the recovery timestamp on every heart loss
+            this.playerData.lastHeartLost = new Date().toISOString();
             this.savePlayerData();
             this.updateStatsDisplay();
 
@@ -2367,6 +2388,7 @@ ${answers.message || ''}`;
         this.savePlayerData();
         this.updateStatsDisplay();
         document.getElementById('modal-overlay').classList.remove('show');
+        this.transitionTo(() => this.renderHomeScreen());
     }
 
     exitLesson() {

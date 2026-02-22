@@ -30,8 +30,8 @@
                     <span>או</span>
                 </div>
 
-                <input type="email" id="auth-email" class="auth-input" placeholder="אימייל" autocomplete="email">
-                <input type="password" id="auth-password" class="auth-input" placeholder="סיסמה" autocomplete="current-password">
+                <input type="email" id="auth-email" class="auth-input" placeholder="אימייל" autocomplete="email" aria-label="אימייל">
+                <input type="password" id="auth-password" class="auth-input" placeholder="סיסמה" autocomplete="current-password" aria-label="סיסמה">
 
                 <button class="btn btn-primary btn-full auth-submit-btn" id="auth-login-btn" onclick="game.authManager.loginWithEmail()">
                     <span class="btn-text">התחברות</span>
@@ -54,8 +54,8 @@
                     <span>או</span>
                 </div>
 
-                <input type="email" id="register-email" class="auth-input" placeholder="אימייל" autocomplete="email">
-                <input type="password" id="register-password" class="auth-input" placeholder="סיסמה (לפחות 6 תווים)" autocomplete="new-password">
+                <input type="email" id="register-email" class="auth-input" placeholder="אימייל" autocomplete="email" aria-label="אימייל">
+                <input type="password" id="register-password" class="auth-input" placeholder="סיסמה (לפחות 6 תווים)" autocomplete="new-password" aria-label="סיסמה">
 
                 <button class="btn btn-primary btn-full auth-submit-btn" id="auth-register-btn" onclick="game.authManager.registerWithEmail()">
                     <span class="btn-text">הרשמה</span>
@@ -67,7 +67,7 @@
                 </p>
             </div>
 
-            <div id="auth-error" class="auth-error" style="display: none;"></div>
+            <div id="auth-error" class="auth-error" role="alert" aria-live="assertive" style="display: none;"></div>
 
             <!-- Guest mode -->
             <button class="auth-guest-btn" onclick="game.authManager.continueAsGuest()">
@@ -87,6 +87,7 @@
     <!-- Onboarding Overlay -->
     <div id="onboarding-overlay" class="onboarding-overlay" style="display: none;">
         <div class="onboarding-card">
+            <button class="onboarding-skip" onclick="game.skipOnboarding()">דלג &larr;</button>
             <div class="onboarding-step" id="onboarding-step-content"></div>
             <div class="onboarding-dots" id="onboarding-dots"></div>
             <button class="btn btn-primary btn-full" id="onboarding-btn" onclick="game.nextOnboardingStep()">הבא</button>
@@ -118,7 +119,7 @@
                 <button class="sound-toggle" id="sound-toggle" onclick="game.toggleSound()" title="השתק/הפעל צלילים">
                     🔊
                 </button>
-                <button class="user-menu-btn" id="user-menu-btn" onclick="game.toggleUserMenu()">
+                <button class="user-menu-btn" id="user-menu-btn" onclick="game.toggleUserMenu()" aria-label="תפריט משתמש">
                     👤
                 </button>
             </div>

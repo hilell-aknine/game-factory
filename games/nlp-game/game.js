@@ -809,6 +809,13 @@ class StoryGame {
         }
     }
 
+    skipOnboarding() {
+        document.getElementById('onboarding-overlay').style.display = 'none';
+        this.playerData.onboardingComplete = true;
+        this.savePlayerData();
+        this.renderHomeScreen();
+    }
+
     // ═══════════════════════════════════════
     // Screen Transitions
     // ═══════════════════════════════════════
