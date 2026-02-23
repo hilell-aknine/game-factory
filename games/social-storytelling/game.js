@@ -1459,6 +1459,48 @@ ${answers.message || ''}`;
         this.currentScreen = 'exercise';
         this.currentExerciseIndex = 0;
         this.lessonMistakes = 0;
+
+        if (this.currentLesson.summary) {
+            this.renderLessonIntro();
+        } else {
+            this.showProgressBar();
+            this.renderExercise();
+        }
+    }
+
+    renderLessonIntro() {
+        this.hideProgressBar();
+        const lesson = this.currentLesson;
+        const container = document.getElementById('game-container');
+        const detailSection = lesson.summaryDetail
+            ? `<div class="lesson-intro-detail" id="intro-detail">${lesson.summaryDetail}</div>
+               <button class="lesson-intro-toggle" onclick="game.toggleIntroDetail()">קראו עוד +</button>`
+            : '';
+
+        container.innerHTML = `
+            <div class="lesson-intro">
+                <div class="lesson-intro-icon">💡</div>
+                <h2>${lesson.title}</h2>
+                <div class="lesson-intro-summary">${lesson.summary}</div>
+                ${detailSection}
+                <button class="lesson-intro-cta" onclick="game.startExercises()">בואו נתחיל 🎯</button>
+            </div>
+        `;
+    }
+
+    toggleIntroDetail() {
+        const detail = document.getElementById('intro-detail');
+        const toggle = document.querySelector('.lesson-intro-toggle');
+        if (detail.classList.contains('open')) {
+            detail.classList.remove('open');
+            toggle.textContent = 'קראו עוד +';
+        } else {
+            detail.classList.add('open');
+            toggle.textContent = 'הסתירו −';
+        }
+    }
+
+    startExercises() {
         this.showProgressBar();
         this.renderExercise();
     }

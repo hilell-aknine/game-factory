@@ -4096,3 +4096,112 @@ main,
         animation: none !important;
     }
 }
+
+/* ═══════════════════════════════════════
+   Lesson Intro (Pareto Summary Screen)
+   ═══════════════════════════════════════ */
+.lesson-intro {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    animation: fadeInUp 0.4s ease;
+}
+
+.lesson-intro-icon {
+    font-size: 3rem;
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.lesson-intro h2 {
+    text-align: center;
+    color: var(--primary);
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.lesson-intro-summary {
+    background: var(--bg-raised);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--r-lg);
+    padding: 1.25rem 1.5rem;
+    color: var(--text-primary);
+    font-size: 1.05rem;
+    line-height: 1.8;
+    margin-bottom: 1rem;
+}
+
+.lesson-intro-detail {
+    background: var(--bg-overlay);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--r-lg);
+    padding: 1.25rem 1.5rem;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.8;
+    margin-bottom: 1rem;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.lesson-intro-detail.open {
+    max-height: 500px;
+    opacity: 1;
+    padding: 1.25rem 1.5rem;
+}
+
+.lesson-intro-toggle {
+    display: block;
+    margin: 0 auto 1.5rem;
+    background: none;
+    border: none;
+    color: var(--primary);
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    transition: opacity 0.2s;
+}
+
+.lesson-intro-toggle:hover {
+    opacity: 0.8;
+}
+
+.lesson-intro-cta {
+    display: block;
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: var(--text-on-primary);
+    border: none;
+    border-radius: var(--r-full);
+    font-size: 1.15rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 15px var(--primary-glow);
+}
+
+.lesson-intro-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px var(--primary-glow);
+}
+
+@media (max-width: 480px) {
+    .lesson-intro {
+        padding: 1.5rem 1rem;
+    }
+    .lesson-intro h2 {
+        font-size: 1.25rem;
+    }
+    .lesson-intro-summary {
+        font-size: 0.95rem;
+        padding: 1rem;
+    }
+}
