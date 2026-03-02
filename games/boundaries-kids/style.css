@@ -806,9 +806,11 @@ body {
     z-index: 100;
     border-top-left-radius: var(--r-xl);
     border-top-right-radius: var(--r-xl);
+    visibility: hidden;
 }
 
 .feedback-panel.show {
+    visibility: visible;
     transform: translateY(0);
 }
 
