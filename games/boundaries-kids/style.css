@@ -51,6 +51,7 @@
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
     --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.25);
     --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.3);
+    --shadow-xl: 0 12px 48px rgba(0, 0, 0, 0.35);
     --shadow-glow-primary: 0 0 24px rgba(124, 92, 252, 0.2);
     --shadow-glow-green: 0 0 24px rgba(52, 211, 153, 0.2);
     --shadow-glow-pink: 0 0 24px rgba(244, 114, 182, 0.2);
@@ -154,9 +155,22 @@ body {
     font-size: 16px;
 }
 
-.stat-item.xp { color: var(--accent-amber); }
-.stat-item.streak { color: var(--accent-orange); }
-.stat-item.hearts { color: var(--accent-red); background: none; border: none; padding: 5px 0; }
+.stat-item.xp {
+    color: var(--accent-amber);
+    background: rgba(251, 191, 36, 0.1);
+    border-color: rgba(251, 191, 36, 0.2);
+}
+.stat-item.streak {
+    color: var(--accent-orange);
+    background: rgba(251, 146, 60, 0.1);
+    border-color: rgba(251, 146, 60, 0.2);
+}
+.stat-item.hearts {
+    color: var(--accent-red);
+    background: rgba(251, 113, 133, 0.08);
+    border-color: rgba(251, 113, 133, 0.15);
+    padding: 5px 10px;
+}
 
 /* ═══════════════════════════════════════
    Progress Bar
@@ -164,7 +178,7 @@ body {
 .progress-container {
     background: var(--bg-raised);
     border-radius: var(--r-full);
-    height: 6px;
+    height: 10px;
     overflow: hidden;
     margin-bottom: 24px;
 }
@@ -175,6 +189,7 @@ body {
     border-radius: var(--r-full);
     transition: width 0.6s var(--ease-out);
     position: relative;
+    box-shadow: 0 0 8px rgba(47, 133, 146, 0.4);
 }
 
 /* ═══════════════════════════════════════
@@ -398,18 +413,24 @@ body {
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--glass-border);
+    border-top: 3px solid var(--primary);
     border-radius: var(--r-xl);
     padding: 28px 24px;
     margin-bottom: 20px;
 }
 
 .exercise-type {
+    display: inline-block;
     font-size: 11px;
     font-weight: 700;
     color: var(--primary-light);
     text-transform: uppercase;
     letter-spacing: 1.5px;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
+    background: rgba(47, 133, 146, 0.12);
+    border: 1px solid rgba(47, 133, 146, 0.2);
+    padding: 4px 12px;
+    border-radius: var(--r-full);
 }
 
 .exercise-question {
@@ -447,6 +468,8 @@ body {
 .option-btn:hover {
     border-color: var(--glass-border-hover);
     background: var(--bg-hover);
+    transform: translateX(-3px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .option-btn.selected {
@@ -816,10 +839,12 @@ body {
 
 .feedback-panel.correct {
     background: linear-gradient(135deg, #059669, #10b981);
+    box-shadow: 0 -4px 24px rgba(16, 185, 129, 0.3);
 }
 
 .feedback-panel.incorrect {
     background: linear-gradient(135deg, #e11d48, #f43f5e);
+    box-shadow: 0 -4px 24px rgba(244, 63, 94, 0.3);
 }
 
 .feedback-content {
@@ -1011,7 +1036,7 @@ body {
     -webkit-backdrop-filter: blur(12px);
     border-radius: var(--r-lg);
     padding: 16px 18px;
-    margin-bottom: 12px;
+    margin-bottom: 24px;
     border: 1px solid var(--glass-border);
 }
 
@@ -1039,7 +1064,7 @@ body {
 }
 
 .level-progress-bar {
-    height: 8px;
+    height: 10px;
     background: var(--bg-active);
     border-radius: var(--r-full);
     overflow: hidden;
@@ -1053,6 +1078,7 @@ body {
     transition: width 0.6s var(--ease-out);
     position: relative;
     animation: xp-bar-flow 3s linear infinite;
+    box-shadow: 0 0 10px rgba(47, 133, 146, 0.4);
 }
 
 .level-progress-fill::after {
@@ -1237,6 +1263,7 @@ body {
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--glass-border);
+    border-top: 2px solid rgba(124, 92, 252, 0.3);
     border-radius: var(--r-md);
     border-top-right-radius: 4px;
     padding: 14px 18px;
@@ -1837,7 +1864,9 @@ body {
    Achievements Grid
    ═══════════════════════════════════════ */
 .achievements-section {
-    margin-top: 28px;
+    margin-top: 12px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
 }
 
 .achievements-title {
@@ -1865,18 +1894,38 @@ body {
 }
 
 .achievement-item.unlocked {
-    border-color: rgba(52, 211, 153, 0.25);
-    background: rgba(52, 211, 153, 0.05);
-    box-shadow: 0 0 16px rgba(52, 211, 153, 0.08);
+    border-color: rgba(52, 211, 153, 0.3);
+    background: rgba(52, 211, 153, 0.08);
+    box-shadow: 0 0 16px rgba(52, 211, 153, 0.12);
 }
 
 .achievement-item.locked {
-    opacity: 0.25;
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(255, 255, 255, 0.04);
+}
+
+.achievement-item.locked .achievement-icon {
+    filter: grayscale(1) brightness(0.3);
+    opacity: 0.5;
+}
+
+.achievement-item.locked .achievement-name {
+    color: var(--text-muted);
 }
 
 .achievement-icon {
-    font-size: 24px;
+    font-size: 26px;
     margin-bottom: 6px;
+    transition: transform 0.3s var(--ease-spring);
+}
+
+.achievement-item.unlocked .achievement-icon {
+    font-size: 28px;
+}
+
+.achievement-item.unlocked:hover .achievement-icon {
+    transform: scale(1.15);
 }
 
 .achievement-name {
@@ -1953,16 +2002,18 @@ body {
     background: var(--bg-raised);
     border: 2px solid var(--border-light);
     border-radius: var(--r-lg);
-    padding: 20px;
+    padding: 22px;
     cursor: pointer;
     transition: all 0.25s var(--ease-out);
     width: 100%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .compare-card:hover {
     border-color: var(--glass-border-hover);
     background: var(--bg-hover);
-    transform: translateY(-2px);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
 }
 
 .compare-card.selected {
@@ -1986,12 +2037,13 @@ body {
 }
 
 .compare-vs {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 800;
     color: var(--accent-amber);
-    padding: 10px 0;
+    padding: 12px 0;
     text-align: center;
-    letter-spacing: 2px;
+    letter-spacing: 3px;
+    text-shadow: 0 0 12px rgba(251, 191, 36, 0.3);
 }
 
 .compare-label {
@@ -2000,7 +2052,9 @@ body {
     color: var(--primary-light);
     text-transform: uppercase;
     letter-spacing: 1px;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
 }
 
 .compare-text {
@@ -3247,7 +3301,7 @@ main,
 
 .learning-path-progress-bar {
     flex: 1;
-    height: 6px;
+    height: 8px;
     background: var(--bg-active);
     border-radius: var(--r-full);
     overflow: hidden;
@@ -3284,15 +3338,10 @@ main,
     bottom: -2px;
     left: 50%;
     transform: translateX(-50%);
-    width: 2px;
-    height: 24px;
-    background: repeating-linear-gradient(
-        to bottom,
-        var(--border-light) 0px,
-        var(--border-light) 4px,
-        transparent 4px,
-        transparent 8px
-    );
+    width: 3px;
+    height: 28px;
+    background: linear-gradient(to bottom, var(--primary-light), var(--border-light));
+    border-radius: 2px;
     z-index: 0;
 }
 
@@ -3368,8 +3417,9 @@ main,
 }
 
 .path-node.available {
-    border-color: rgba(124, 92, 252, 0.4);
-    box-shadow: 0 0 20px rgba(124, 92, 252, 0.15);
+    border-color: rgba(124, 92, 252, 0.5);
+    box-shadow: 0 0 24px rgba(124, 92, 252, 0.2), 0 4px 16px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(135deg, rgba(124, 92, 252, 0.08), var(--glass) 60%);
 }
 
 .path-node.available .path-node-icon {
@@ -3378,9 +3428,11 @@ main,
 }
 
 .path-node.locked {
-    opacity: 0.4;
+    opacity: 1;
     cursor: not-allowed;
-    border-color: var(--glass-border);
+    border-color: rgba(255, 255, 255, 0.04);
+    filter: saturate(0.3);
+    background: rgba(255, 255, 255, 0.02);
 }
 
 .path-node.locked:hover {
@@ -3390,6 +3442,11 @@ main,
 
 .path-node.locked .path-node-icon {
     background: var(--bg-active);
+    filter: grayscale(1);
+}
+
+.path-node.locked .path-node-title {
+    color: var(--text-muted);
 }
 
 @keyframes node-pulse {
@@ -3501,8 +3558,9 @@ main,
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 0 0 30px;
+    padding: 24px 0 30px;
     position: relative;
+    margin-top: 8px;
 }
 
 .home-journey-title {
@@ -3529,8 +3587,8 @@ main,
     transform: translateX(-50%);
     background: repeating-linear-gradient(
         to bottom,
-        var(--border-light) 0px,
-        var(--border-light) 6px,
+        rgba(124, 92, 252, 0.2) 0px,
+        rgba(124, 92, 252, 0.2) 6px,
         transparent 6px,
         transparent 12px
     );
@@ -3579,6 +3637,8 @@ main,
     font-size: 22px;
     flex-shrink: 0;
     transition: all 0.3s ease;
+    background: var(--bg-overlay);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .home-path-info {
@@ -3616,7 +3676,7 @@ main,
 
 .home-path-progress-bar {
     flex: 1;
-    height: 4px;
+    height: 6px;
     background: var(--bg-active);
     border-radius: var(--r-full);
     overflow: hidden;
@@ -3654,14 +3714,16 @@ main,
 
 .home-path-node.completed {
     border-color: rgba(52, 211, 153, 0.3);
+    background: rgba(52, 211, 153, 0.04);
 }
 .home-path-node.completed .home-path-icon {
     background: linear-gradient(135deg, var(--accent-green), var(--accent-green-dark));
 }
 
 .home-path-node.available {
-    border-color: rgba(124, 92, 252, 0.4);
-    box-shadow: 0 0 20px rgba(124, 92, 252, 0.1);
+    border-color: rgba(124, 92, 252, 0.5);
+    box-shadow: 0 0 24px rgba(124, 92, 252, 0.15), inset 0 0 0 1px rgba(124, 92, 252, 0.1);
+    background: linear-gradient(135deg, rgba(124, 92, 252, 0.08), var(--glass) 60%);
 }
 .home-path-node.available .home-path-icon {
     background: linear-gradient(135deg, var(--primary), var(--primary-dark));
@@ -3669,8 +3731,11 @@ main,
 }
 
 .home-path-node.locked {
-    opacity: 0.4;
+    opacity: 1;
     cursor: not-allowed;
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(255, 255, 255, 0.04);
+    filter: saturate(0.3);
 }
 .home-path-node.locked:hover {
     transform: none;
@@ -3678,6 +3743,12 @@ main,
 }
 .home-path-node.locked .home-path-icon {
     background: var(--bg-active);
+    filter: grayscale(1);
+}
+.home-path-node.locked .home-path-title,
+.home-path-node.locked .home-path-desc,
+.home-path-node.locked .home-path-label {
+    color: var(--text-muted);
 }
 
 .home-path-node.special {
