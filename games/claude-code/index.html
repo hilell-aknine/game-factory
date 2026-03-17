@@ -19,97 +19,134 @@
         <!-- Hero -->
         <section class="landing-hero">
             <div class="landing-hero-glow"></div>
-            <div class="landing-badge"><i class="fa-solid fa-sparkles"></i> משחק לימודי חינמי בסגנון Duolingo</div>
-            <div class="landing-logo"><i class="fa-solid fa-terminal"></i></div>
-            <h1 class="landing-title">תשלטו ב-Claude Code<br>תוך 15 דקות</h1>
-            <p class="landing-subtitle">הכלי שהופך כל מפתח לפי 10 יותר מהיר — ואתם עומדים ללמוד אותו בדרך כיפית, צעד אחרי צעד, בעברית</p>
+            <div class="landing-hero-glow2"></div>
+            <div class="landing-hero-grid"></div>
+
+            <div class="landing-badge"><span class="landing-badge-dot"></span> משחק לימודי אינטראקטיבי · חינם לגמרי</div>
+
+            <!-- Terminal mockup -->
+            <div class="landing-terminal">
+                <div class="landing-terminal-bar">
+                    <span class="term-dot term-red"></span>
+                    <span class="term-dot term-yellow"></span>
+                    <span class="term-dot term-green"></span>
+                    <span class="term-title">Terminal</span>
+                </div>
+                <div class="landing-terminal-body">
+                    <div class="term-line"><span class="term-prompt">$</span> <span class="term-cmd">claude</span></div>
+                    <div class="term-line term-fade1"><span class="term-output">Claude Code v1.0 — Ready</span></div>
+                    <div class="term-line term-fade2"><span class="term-prompt">></span> <span class="term-typing">תקן את הבאג ב-server.js<span class="term-cursor">|</span></span></div>
+                </div>
+            </div>
+
+            <h1 class="landing-title">תשלטו ב-<span class="landing-title-highlight">Claude Code</span><br>בדרך שבה אתם <em>באמת</em> לומדים</h1>
+            <p class="landing-subtitle">לא וידאו. לא מאמר. <strong>משחק.</strong><br>87 תרגילים אינטראקטיביים שהופכים אתכם ממתחילים למאסטרים — בעברית, בקצב שלכם.</p>
+
             <button class="landing-cta" onclick="game.hideLanding()">
-                <i class="fa-solid fa-play"></i> התחילו לשחק — חינם
+                <span class="landing-cta-text"><i class="fa-solid fa-play"></i> התחילו עכשיו — חינם</span>
+                <span class="landing-cta-shine"></span>
             </button>
-            <p class="landing-hero-micro">87 תרגילים · 15 שיעורים · 7 מודולים · אפס ניסיון נדרש</p>
+            <p class="landing-hero-micro">אפס ניסיון נדרש · עובד על כל מכשיר · בלי הרשמה</p>
         </section>
 
-        <!-- Social Proof -->
-        <section class="landing-social-proof">
+        <!-- Stats -->
+        <section class="landing-stats-section">
             <div class="landing-stats-row">
                 <div class="landing-stat-box">
-                    <span class="landing-stat-number">87</span>
+                    <span class="landing-stat-number" data-count="87">87</span>
                     <span class="landing-stat-label">תרגילים</span>
                 </div>
+                <div class="landing-stat-divider"></div>
                 <div class="landing-stat-box">
-                    <span class="landing-stat-number">7</span>
-                    <span class="landing-stat-label">סוגי תרגילים</span>
-                </div>
-                <div class="landing-stat-box">
-                    <span class="landing-stat-number">15</span>
+                    <span class="landing-stat-number" data-count="15">15</span>
                     <span class="landing-stat-label">שיעורים</span>
                 </div>
+                <div class="landing-stat-divider"></div>
+                <div class="landing-stat-box">
+                    <span class="landing-stat-number" data-count="7">7</span>
+                    <span class="landing-stat-label">סוגי תרגילים</span>
+                </div>
             </div>
         </section>
 
-        <!-- Pain Point -->
+        <!-- Pain Points -->
         <section class="landing-section">
-            <h2 class="landing-section-title">מכירים את זה?</h2>
+            <h2 class="landing-section-title">בלי Claude Code, אתם<br><span class="title-accent">עובדים פי 10 יותר קשה</span></h2>
             <div class="landing-pain-grid">
                 <div class="landing-pain-card">
-                    <span class="landing-pain-emoji">😵</span>
-                    <span class="landing-pain-text">שמעתם על Claude Code אבל לא יודעים מאיפה להתחיל</span>
+                    <div class="landing-pain-icon-wrap"><span class="landing-pain-emoji">😵‍💫</span></div>
+                    <div class="landing-pain-content">
+                        <span class="landing-pain-title">מאיפה מתחילים?</span>
+                        <span class="landing-pain-text">שמעתם על Claude Code אבל ההתקנה, ההגדרות והפקודות מרגישים מבלבלים</span>
+                    </div>
                 </div>
                 <div class="landing-pain-card">
-                    <span class="landing-pain-emoji">⏰</span>
-                    <span class="landing-pain-text">מבזבזים שעות על משימות שClaude Code יכול לעשות בשניות</span>
+                    <div class="landing-pain-icon-wrap"><span class="landing-pain-emoji">⏳</span></div>
+                    <div class="landing-pain-content">
+                        <span class="landing-pain-title">שעות על משימות של דקות</span>
+                        <span class="landing-pain-text">קוראים, מחפשים, מתקנים ידנית — דברים שClaude Code עושה בשניות</span>
+                    </div>
                 </div>
                 <div class="landing-pain-card">
-                    <span class="landing-pain-emoji">💸</span>
-                    <span class="landing-pain-text">שורפים טוקנים כי לא יודעים לתת הוראות נכונות</span>
+                    <div class="landing-pain-icon-wrap"><span class="landing-pain-emoji">🔥</span></div>
+                    <div class="landing-pain-content">
+                        <span class="landing-pain-title">שורפים טוקנים (= כסף)</span>
+                        <span class="landing-pain-text">הוראות לא מדויקות, שיחות ארוכות, מודל לא מתאים — הכל עולה</span>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- What You'll Learn -->
+        <!-- What You'll Master -->
         <section class="landing-section">
-            <h2 class="landing-section-title">מה תדעו לעשות אחרי המשחק?</h2>
+            <h2 class="landing-section-title">מה תשלטו בזה<br><span class="title-accent">אחרי 15 דקות של משחק?</span></h2>
             <div class="landing-modules-grid">
-                <div class="landing-module-card">
+                <div class="landing-module-card" style="--accent: #00d4aa;">
+                    <div class="landing-module-num">01</div>
                     <span class="landing-module-icon"><i class="fa-solid fa-terminal"></i></span>
                     <div class="landing-module-content">
-                        <span class="landing-module-text">להתקין ולהפעיל Claude Code</span>
+                        <span class="landing-module-text">התקנה והפעלה</span>
                         <span class="landing-module-sub">מאפס ועד שיחה ראשונה בטרמינל</span>
                     </div>
                 </div>
-                <div class="landing-module-card">
-                    <span class="landing-module-icon"><i class="fa-solid fa-file-code"></i></span>
+                <div class="landing-module-card" style="--accent: #3b82f6;">
+                    <div class="landing-module-num">02</div>
+                    <span class="landing-module-icon" style="color: #3b82f6; background: rgba(59,130,246,0.08);"><i class="fa-solid fa-file-code"></i></span>
                     <div class="landing-module-content">
-                        <span class="landing-module-text">לקרוא, לכתוב ולערוך קבצים</span>
-                        <span class="landing-module-sub">Read, Edit, Write, Glob, Grep — כל הכלים</span>
+                        <span class="landing-module-text">קבצים ופרויקטים</span>
+                        <span class="landing-module-sub">Read, Edit, Write, Glob, Grep</span>
                     </div>
                 </div>
-                <div class="landing-module-card">
-                    <span class="landing-module-icon"><i class="fa-solid fa-shield-halved"></i></span>
+                <div class="landing-module-card" style="--accent: #f59e0b;">
+                    <div class="landing-module-num">03</div>
+                    <span class="landing-module-icon" style="color: #f59e0b; background: rgba(245,158,11,0.08);"><i class="fa-solid fa-shield-halved"></i></span>
                     <div class="landing-module-content">
-                        <span class="landing-module-text">להגדיר הרשאות ולעבוד בטוח</span>
-                        <span class="landing-module-sub">Permission modes, Git safety, CLAUDE.md</span>
+                        <span class="landing-module-text">הרשאות ובטיחות</span>
+                        <span class="landing-module-sub">Permission modes, Git safety</span>
                     </div>
                 </div>
-                <div class="landing-module-card">
-                    <span class="landing-module-icon"><i class="fa-solid fa-bullseye"></i></span>
+                <div class="landing-module-card" style="--accent: #8b5cf6;">
+                    <div class="landing-module-num">04</div>
+                    <span class="landing-module-icon" style="color: #8b5cf6; background: rgba(139,92,246,0.08);"><i class="fa-solid fa-bullseye"></i></span>
                     <div class="landing-module-content">
-                        <span class="landing-module-text">לתת הוראות שנותנות תוצאות</span>
-                        <span class="landing-module-sub">Prompt engineering + חיסכון בטוקנים</span>
+                        <span class="landing-module-text">Prompt Engineering</span>
+                        <span class="landing-module-sub">הוראות מדויקות + חיסכון בטוקנים</span>
                     </div>
                 </div>
-                <div class="landing-module-card">
-                    <span class="landing-module-icon"><i class="fa-solid fa-plug"></i></span>
+                <div class="landing-module-card" style="--accent: #ec4899;">
+                    <div class="landing-module-num">05</div>
+                    <span class="landing-module-icon" style="color: #ec4899; background: rgba(236,72,153,0.08);"><i class="fa-solid fa-plug"></i></span>
                     <div class="landing-module-content">
-                        <span class="landing-module-text">להרחיב עם Hooks ו-MCP</span>
-                        <span class="landing-module-sub">אוטומציות, Chrome DevTools, GitHub ועוד</span>
+                        <span class="landing-module-text">Hooks + MCP</span>
+                        <span class="landing-module-sub">אוטומציות, Chrome DevTools, GitHub</span>
                     </div>
                 </div>
-                <div class="landing-module-card">
-                    <span class="landing-module-icon"><i class="fa-solid fa-robot"></i></span>
+                <div class="landing-module-card" style="--accent: #14b8a6;">
+                    <div class="landing-module-num">06</div>
+                    <span class="landing-module-icon" style="color: #14b8a6; background: rgba(20,184,166,0.08);"><i class="fa-solid fa-robot"></i></span>
                     <div class="landing-module-content">
-                        <span class="landing-module-text">לבנות Agents ולעבוד במקביל</span>
-                        <span class="landing-module-sub">Sub-agents, Agent SDK, Extended Thinking</span>
+                        <span class="landing-module-text">Agents + Mastery</span>
+                        <span class="landing-module-sub">Sub-agents, SDK, Extended Thinking</span>
                     </div>
                 </div>
             </div>
@@ -121,23 +158,25 @@
             <div class="landing-steps">
                 <div class="landing-step">
                     <div class="landing-step-num">1</div>
+                    <div class="landing-step-connector"></div>
                     <div class="landing-step-text">
-                        <strong>קוראים סיכום קצר</strong>
-                        <span>כל שיעור מתחיל בהסבר פשוט של הנושא</span>
+                        <strong>קוראים סיכום ממוקד</strong>
+                        <span>30 שניות של תיאוריה — רק מה שחשוב</span>
                     </div>
                 </div>
                 <div class="landing-step">
                     <div class="landing-step-num">2</div>
+                    <div class="landing-step-connector"></div>
                     <div class="landing-step-text">
-                        <strong>מתרגלים עם 7 סוגי תרגילים</strong>
-                        <span>בחירה, השלמה, סידור, השוואה, התאמה, שיפור, זיהוי</span>
+                        <strong>מתרגלים ב-7 סוגי תרגילים</strong>
+                        <span>בחירה · השלמה · סידור · השוואה · התאמה · שיפור · זיהוי</span>
                     </div>
                 </div>
                 <div class="landing-step">
                     <div class="landing-step-num">3</div>
                     <div class="landing-step-text">
-                        <strong>צוברים XP ופותחים הישגים</strong>
-                        <span>לבבות, סטריק יומי, רמות — בדיוק כמו Duolingo</span>
+                        <strong>צוברים XP, עולים רמה</strong>
+                        <span>לבבות · סטריק · הישגים — כמו Duolingo, רק לCLI</span>
                     </div>
                 </div>
             </div>
@@ -146,17 +185,19 @@
         <!-- Final CTA -->
         <section class="landing-section landing-final-cta">
             <div class="landing-final-card">
-                <div class="landing-final-icon"><i class="fa-solid fa-rocket"></i></div>
-                <h2>מוכנים להתחיל?</h2>
-                <p>מ-Beginner ל-Claude Code Master — בחינם, בעברית, בקצב שלכם</p>
-                <button class="landing-cta" onclick="game.hideLanding()">
-                    <i class="fa-solid fa-play"></i> בואו נשחק
+                <div class="landing-final-glow"></div>
+                <div class="landing-final-emoji">🚀</div>
+                <h2>מוכנים?</h2>
+                <p>מ-<strong>Beginner</strong> ל-<strong>Claude Code Master</strong><br>בחינם · בעברית · בקצב שלכם</p>
+                <button class="landing-cta landing-cta-big" onclick="game.hideLanding()">
+                    <span class="landing-cta-text"><i class="fa-solid fa-play"></i> בואו נשחק</span>
+                    <span class="landing-cta-shine"></span>
                 </button>
             </div>
         </section>
 
         <footer class="landing-footer">
-            <p>מדריך לא רשמי. אינו קשור ל-Anthropic.<br>נבנה באהבה עם Claude Code <i class="fa-solid fa-terminal"></i></p>
+            <p>מדריך לא רשמי. אינו קשור ל-Anthropic · נבנה עם Claude Code <i class="fa-solid fa-terminal"></i></p>
         </footer>
     </div>
 
