@@ -145,7 +145,7 @@ body {
 .landing-step { display: flex; gap: 16px; align-items: flex-start; position: relative; padding-bottom: 24px; }
 .landing-step:last-child { padding-bottom: 0; }
 .landing-step-num { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--color-terminal), #00a886); color: var(--bg-base); font-weight: 800; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; position: relative; z-index: 1; box-shadow: 0 0 0 4px var(--bg-base), 0 0 0 5px rgba(0,212,170,0.2); }
-.landing-step-connector { position: absolute; right: 39px; top: 44px; width: 2px; height: calc(100% - 44px); background: linear-gradient(to bottom, rgba(0,212,170,0.3), rgba(0,212,170,0.05)); }
+.landing-step-connector { position: absolute; right: 19px; top: 44px; width: 2px; height: calc(100% - 44px); background: linear-gradient(to bottom, rgba(0,212,170,0.3), rgba(0,212,170,0.05)); }
 .landing-step-text { flex: 1; padding-top: 6px; }
 .landing-step-text strong { display: block; color: var(--text-primary); font-size: 0.95rem; margin-bottom: 3px; }
 .landing-step-text span { color: var(--text-muted); font-size: 0.82rem; line-height: 1.5; }

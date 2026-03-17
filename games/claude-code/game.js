@@ -235,10 +235,14 @@ class ClaudeCodeGame {
         document.getElementById('app-header').style.display = 'none';
         document.getElementById('main-content').style.display = 'none';
         document.getElementById('progress-wrapper').style.display = 'none';
+        document.getElementById('feedback-panel').style.display = 'none';
+        document.getElementById('footer-actions').style.display = 'none';
+        document.getElementById('modal-overlay').style.display = 'none';
     }
 
     hideLanding() {
         document.getElementById('landing-page').style.display = 'none';
+        document.getElementById('feedback-panel').style.display = '';
         localStorage.setItem('ccLandingSeen', '1');
         this.startGame();
     }
