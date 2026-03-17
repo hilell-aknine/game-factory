@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code Master — שליטה מלאה ב-CLI של Anthropic</title>
+    <meta name="description" content="למדו Claude Code מהבסיס ועד לרמה הכי גבוהה — 15 שיעורים, 7 מודולים, 100+ תרגילים אינטראקטיביים בסגנון Duolingo. חינם לגמרי.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&family=Frank+Ruhl+Libre:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen" style="display: flex;">
+        <div class="loading-content">
+            <div class="loading-spinner-large"></div>
+            <p class="loading-text">טוען את המשחק...</p>
+        </div>
+    </div>
+
+    <!-- Onboarding Overlay -->
+    <div id="onboarding-overlay" class="onboarding-overlay" style="display: none;">
+        <div class="onboarding-card">
+            <button class="onboarding-skip" onclick="game.skipOnboarding()">דלג &larr;</button>
+            <div class="onboarding-step" id="onboarding-step-content"></div>
+            <div class="onboarding-dots" id="onboarding-dots"></div>
+            <button class="btn btn-primary btn-full" id="onboarding-btn" onclick="game.nextOnboardingStep()">הבא</button>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header" id="app-header" style="display: none;">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <a href="../../" class="back-to-home" aria-label="חזרה לדף הבית" title="חזרה למפעל משחקים">←</a>
+                <div class="logo"><i class="fa-solid fa-terminal"></i> Claude Code Master</div>
+            </div>
+            <div class="stats-bar">
+                <div class="stat-item xp">
+                    <span class="icon"><i class="fa-solid fa-star"></i></span>
+                    <span id="xp-value">0</span>
+                </div>
+                <div class="stat-item streak">
+                    <span class="icon"><i class="fa-solid fa-fire"></i></span>
+                    <span id="streak-value">0</span>
+                </div>
+                <div class="stat-item hearts">
+                    <div class="hearts-display" id="hearts-container">
+                        <span class="heart"><i class="fa-solid fa-heart"></i></span>
+                        <span class="heart"><i class="fa-solid fa-heart"></i></span>
+                        <span class="heart"><i class="fa-solid fa-heart"></i></span>
+                        <span class="heart"><i class="fa-solid fa-heart"></i></span>
+                        <span class="heart"><i class="fa-solid fa-heart"></i></span>
+                    </div>
+                </div>
+                <button class="sound-toggle" id="sound-toggle" onclick="game.toggleSound()" title="השתק/הפעל צלילים">
+                    <i class="fa-solid fa-volume-high"></i>
+                </button>
+                <button class="user-menu-btn" id="user-menu-btn" onclick="game.toggleUserMenu()" aria-label="תפריט">
+                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Heart Recovery Timer -->
+        <div class="heart-timer-bar" id="heart-timer-bar" style="display: none;">
+            <div class="container">
+                <span class="heart-timer-text" id="heart-timer-text"><i class="fa-solid fa-heart"></i> +1 בעוד 20:00</span>
+                <div class="heart-timer-progress">
+                    <div class="heart-timer-fill" id="heart-timer-fill" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- User Menu -->
+    <div class="user-menu" id="user-menu" style="display: none;">
+        <button class="user-menu-item" onclick="game.showStats()"><i class="fa-solid fa-chart-bar"></i> הסטטיסטיקות שלי</button>
+        <button class="user-menu-item" onclick="game.resetProgress()"><i class="fa-solid fa-rotate-left"></i> איפוס התקדמות</button>
+    </div>
+
+    <!-- Level Up Overlay -->
+    <div class="level-up-overlay" id="level-up-overlay" style="display: none;">
+        <div class="level-up-text" id="level-up-text"></div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="container" id="progress-wrapper" style="display: none;">
+        <div class="progress-container" id="progress-container" style="display: none;">
+            <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container" id="main-content" style="display: none;">
+        <div id="game-container"></div>
+    </main>
+
+    <!-- Footer Actions -->
+    <div class="footer-actions" id="footer-actions" style="display: none;">
+        <div class="container">
+            <button class="btn btn-secondary" onclick="game.exitLesson()">יציאה</button>
+            <button class="btn btn-primary" id="check-btn" disabled onclick="game.checkAnswer()">בדיקה</button>
+        </div>
+    </div>
+
+    <!-- Feedback Panel -->
+    <div class="feedback-panel" id="feedback-panel">
+        <div class="feedback-content">
+            <div class="feedback-header">
+                <span class="feedback-icon" id="feedback-icon"><i class="fa-solid fa-circle-check"></i></span>
+                <span class="feedback-title" id="feedback-title">מעולה!</span>
+            </div>
+            <div class="feedback-explanation" id="feedback-explanation"></div>
+            <button class="feedback-btn" id="feedback-btn" onclick="game.continueToNext()">המשך</button>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-icon" id="modal-icon"></div>
+            <div class="modal-title" id="modal-title">כותרת</div>
+            <div class="modal-text" id="modal-text">טקסט</div>
+            <div class="modal-buttons" id="modal-buttons">
+                <button class="btn btn-primary">אישור</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mentor FAB -->
+    <button class="mentor-fab" id="mentor-fab" style="display: none;" onclick="game.toggleMentorChat()" title="שאל את קלוד">
+        <i class="fa-solid fa-terminal"></i>
+    </button>
+
+    <!-- Mentor Chat Panel -->
+    <div class="mentor-chat-panel" id="mentor-chat-panel" style="display: none;">
+        <div class="mentor-chat-header">
+            <div class="mentor-chat-avatar"><i class="fa-solid fa-terminal"></i></div>
+            <div>
+                <div class="mentor-chat-name">שאל את קלוד</div>
+                <div class="mentor-chat-status">מנטור Claude Code • AI</div>
+            </div>
+            <button class="mentor-chat-close" onclick="game.toggleMentorChat()">✕</button>
+        </div>
+        <div class="mentor-chat-messages" id="mentor-chat-messages">
+            <div class="mentor-msg mentor-msg-ai">היי! אני קלוד <i class="fa-solid fa-terminal"></i> שאלו אותי כל שאלה על Claude Code ואשמח לעזור!</div>
+        </div>
+        <div class="mentor-chat-input-area">
+            <input type="text" id="mentor-chat-input" class="mentor-chat-input" placeholder="שאלו אותי על Claude Code..." onkeydown="if(event.key==='Enter')game.sendMentorChat()" />
+            <button class="mentor-chat-send" onclick="game.sendMentorChat()">➤</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="data.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

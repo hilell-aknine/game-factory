@@ -1,0 +1,1364 @@
+// game.js - Claude Code Master Game Engine
+// Based on NLP Master game engine pattern — standalone, no Supabase
+
+const HEART_RECOVERY_MINUTES = 20;
+
+// ═══════════════════════════════════════
+// AI Mentor (OpenRouter — Step 3.5 Flash)
+// ═══════════════════════════════════════
+class AIMentor {
+    constructor() {
+        this.apiKey = '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';
+        this.endpoint = 'https://openrouter.ai/api/v1/chat/completions';
+        this.model = 'google/gemini-2.0-flash-001';
+        this.systemPrompt = `אתה "קלוד", מנטור Claude Code חם, מעודד וידידותי במשחק לימודי בעברית.
+הנחיות:
+- דבר בעברית בלבד, בגובה העיניים, בגוף שני (את/ה)
+- תשובות קצרות — מקסימום 2-3 משפטים
+- השתמש בדוגמאות מעשיות מעולם הפיתוח
+- תמיד עודד, גם כשהתשובה שגויה — "כל טעות = הזדמנות ללמוד"
+- שלב מונחי Claude Code כשרלוונטי (CLAUDE.md, hooks, MCP, sub-agents, /compact, /model, permissions וכו')
+- אל תחזור על ההסבר שכבר ניתן — הוסף זווית חדשה או דוגמה
+- אתה מומחה ב-Claude Code CLI של Anthropic`;
+    }
+
+    async ask(userMessage, context = '') {
+        try {
+            const messages = [
+                { role: 'system', content: this.systemPrompt + (context ? `\n\nהקשר: ${context}` : '') },
+                { role: 'user', content: userMessage }
+            ];
+            const res = await fetch(this.endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${this.apiKey}`,
+                    'HTTP-Referer': 'https://game-factory.pages.dev',
+                    'X-Title': 'Claude Code Master Game'
+                },
+                body: JSON.stringify({
+                    model: this.model,
+                    messages,
+                    max_tokens: 250,
+                    temperature: 0.8
+                })
+            });
+            if (!res.ok) return null;
+            const data = await res.json();
+            return data.choices?.[0]?.message?.content || null;
+        } catch (e) {
+            console.warn('AI Mentor error:', e);
+            return null;
+        }
+    }
+
+    async getFeedback(exercise, isCorrect, selectedAnswer) {
+        const correctText = exercise.options ? exercise.options[exercise.correct] : '';
+        const selectedText = exercise.options && selectedAnswer !== null ? exercise.options[selectedAnswer] : '';
+        const prompt = isCorrect
+            ? `השחקן ענה נכון על שאלה: "${exercise.question}". התשובה: "${correctText}". תן טיפ קצר או תובנה מעניינת שמרחיבה את ההבנה.`
+            : `השחקן ענה שגוי. השאלה: "${exercise.question}". בחר: "${selectedText}" במקום "${correctText}". עודד אותו בקצרה והסבר בזווית אחרת.`;
+        return this.ask(prompt, `נושא: ${exercise.question}`);
+    }
+
+    async chat(userMessage, playerLevel, moduleName) {
+        const context = `השחקן ברמה ${playerLevel}, לומד כרגע: ${moduleName || 'Claude Code כללי'}`;
+        return this.ask(userMessage, context);
+    }
+}
+
+// ═══════════════════════════════════════
+// Sound Manager (Web Audio API)
+// ═══════════════════════════════════════
+class SoundManager {
+    constructor() {
+        this.enabled = localStorage.getItem('ccGameSound') !== 'off';
+        this.ctx = null;
+    }
+    getContext() {
+        if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        return this.ctx;
+    }
+    play(type) {
+        if (!this.enabled) return;
+        try {
+            const ctx = this.getContext();
+            if (ctx.state === 'suspended') ctx.resume();
+            switch (type) {
+                case 'correct': this._playCorrect(ctx); break;
+                case 'wrong': this._playWrong(ctx); break;
+                case 'levelUp': this._playLevelUp(ctx); break;
+                case 'achievement': this._playAchievement(ctx); break;
+                case 'click': this._playClick(ctx); break;
+            }
+        } catch (e) { /* audio not supported */ }
+    }
+    _playTone(ctx, freq, duration, type = 'sine', gain = 0.3) {
+        const osc = ctx.createOscillator();
+        const g = ctx.createGain();
+        osc.type = type; osc.frequency.value = freq;
+        g.gain.value = gain;
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+        osc.connect(g); g.connect(ctx.destination);
+        osc.start(ctx.currentTime); osc.stop(ctx.currentTime + duration);
+    }
+    _playCorrect(ctx) {
+        this._playTone(ctx, 523, 0.15, 'sine', 0.2);
+        setTimeout(() => this._playTone(ctx, 659, 0.15, 'sine', 0.2), 100);
+        setTimeout(() => this._playTone(ctx, 784, 0.2, 'sine', 0.25), 200);
+    }
+    _playWrong(ctx) { this._playTone(ctx, 200, 0.3, 'triangle', 0.2); }
+    _playLevelUp(ctx) {
+        [523, 587, 659, 784, 880].forEach((f, i) => {
+            setTimeout(() => this._playTone(ctx, f, 0.2, 'sine', 0.2), i * 100);
+        });
+    }
+    _playAchievement(ctx) {
+        [784, 988, 1175].forEach((f, i) => {
+            setTimeout(() => this._playTone(ctx, f, 0.25, 'sine', 0.15), i * 150);
+        });
+    }
+    _playClick(ctx) { this._playTone(ctx, 600, 0.05, 'sine', 0.1); }
+    toggle() {
+        this.enabled = !this.enabled;
+        localStorage.setItem('ccGameSound', this.enabled ? 'on' : 'off');
+        return this.enabled;
+    }
+}
+
+// ═══════════════════════════════════════
+// Main Game Class
+// ═══════════════════════════════════════
+class ClaudeCodeGame {
+    constructor() {
+        this.currentScreen = 'home';
+        this.currentModule = null;
+        this.currentLesson = null;
+        this.currentExerciseIndex = 0;
+        this.selectedAnswer = null;
+        this.exerciseAnswered = false;
+        this.isDailyChallenge = false;
+        this.lessonMistakes = 0;
+        this.onboardingStep = 0;
+        this.heartTimerInterval = null;
+        this.userMenuOpen = false;
+
+        this.sound = new SoundManager();
+        this.mentor = new AIMentor();
+
+        this.playerData = this.getDefaultPlayerData();
+
+        // Mentor messages
+        this.mentorMessages = {
+            welcome: [
+                "היי! אני קלוד, ואני כאן ללוות אותך במסע לשליטה ב-Claude Code!",
+                "ברוכים הבאים! מוכנים להפוך ל-Claude Code Masters?",
+                "שמח לראות אותך! יחד נלמד איך לעבוד עם AI ישירות מהטרמינל."
+            ],
+            moduleIntro: {
+                1: "הבסיס של הכל! בואו נבין מה זה Claude Code ולמה זה משנה את הדרך שבה מפתחים.",
+                2: "עכשיו נלמד לעבוד עם קבצים ופרויקטים — הכוח האמיתי של Claude Code!",
+                3: "בטיחות קודמת! נבין את מערכת ההרשאות ואיך Claude Code שומר עליכם.",
+                4: "הוראות טובות = תוצאות מדהימות. בואו נלמד prompt engineering!",
+                5: "כלים מתקדמים — Hooks, MCP, ועולם שלם של אפשרויות!",
+                6: "סוכנים, עבודה במקביל, ואורקסטרציה — הרמה הגבוהה!",
+                7: "Extended Thinking, Memory ו-Best Practices — אתם כמעט מאסטרים!"
+            },
+            lessonStart: [
+                "מעולה! בואו נתחיל. קחו את הזמן.",
+                "אני לצידך בכל שלב. בהצלחה!",
+                "זוכרים — כל תרגיל מקרב אתכם לשליטה מלאה ב-Claude Code!"
+            ],
+            correctAnswer: [
+                "מדהים! בדיוק ככה!",
+                "וואו, את/ה ממש תופס/ת את זה!",
+                "נכון מאוד! אתם הולכים להיות Claude Code masters!",
+                "יופי! הטרמינל כבר מפחד ממכם!",
+                "מצוין! את/ה בדרך להיות מפתח AI מעולה!"
+            ],
+            wrongAnswer: [
+                "לא נורא! טעויות הן חלק מהלמידה.",
+                "קרוב! בפעם הבאה נסו לחשוב על ההקשר.",
+                "לא בדיוק, אבל זו הזדמנות ללמוד משהו חדש!",
+                "אל דאגה, גם Claude Code לומד מטעויות!"
+            ],
+            encouragement: [
+                "את/ה עושה עבודה נהדרת!",
+                "כל תרגיל מקרב אותך לשליטה ב-CLI!",
+                "אני גאה בך! ממשיכים!",
+                "המשיכו ככה, Master!"
+            ],
+            lessonComplete: [
+                "איזה כיף! סיימת שיעור נוסף!",
+                "מעולה! עוד צעד בדרך לשליטה מלאה!",
+                "אלופים! הידע הזה ישנה לכם את העבודה!"
+            ]
+        };
+
+        // Achievements
+        this.achievements = [
+            { id: 'first_lesson', title: 'Hello World', desc: 'סיימת את השיעור הראשון', icon: '💻', condition: (d) => Object.keys(d.completedLessons).length >= 1 },
+            { id: 'five_lessons', title: 'Code Explorer', desc: 'סיימת 5 שיעורים', icon: '🔍', condition: (d) => Object.keys(d.completedLessons).length >= 5 },
+            { id: 'ten_lessons', title: 'Power User', desc: 'סיימת 10 שיעורים', icon: '⚡', condition: (d) => Object.keys(d.completedLessons).length >= 10 },
+            { id: 'all_lessons', title: 'Claude Code Master', desc: 'סיימת את כל השיעורים', icon: '🏆', condition: (d) => Object.keys(d.completedLessons).length >= 15 },
+            { id: 'streak_3', title: 'התמדה', desc: '3 ימים ברצף', icon: '🔥', condition: (d) => d.streak >= 3 },
+            { id: 'streak_7', title: 'שבוע של קידוד', desc: '7 ימים ברצף', icon: '⭐', condition: (d) => d.streak >= 7 },
+            { id: 'xp_500', title: 'צובר ניסיון', desc: 'צברת 500 XP', icon: '🎖️', condition: (d) => d.xp >= 500 },
+            { id: 'xp_2000', title: 'Terminal Warrior', desc: 'צברת 2000 XP', icon: '🏅', condition: (d) => d.xp >= 2000 },
+            { id: 'perfect_lesson', title: 'Zero Bugs', desc: 'סיימת שיעור בלי טעויות', icon: '✨', condition: (d) => d.perfectLessons >= 1 },
+            { id: 'accuracy_80', title: 'דיוק גבוה', desc: 'דיוק של 80% ומעלה', icon: '🎯', condition: (d) => d.totalCorrectAnswers > 0 && (d.totalCorrectAnswers / (d.totalCorrectAnswers + d.totalWrongAnswers)) >= 0.8 }
+        ];
+
+        this.initRipple();
+        this.init();
+    }
+
+    // ═══════════════════════════════════════
+    // Init
+    // ═══════════════════════════════════════
+    init() {
+        this.playerData = this.loadFromLocalStorage() || this.getDefaultPlayerData();
+        document.getElementById('loading-screen').style.display = 'none';
+        document.getElementById('app-header').style.display = 'block';
+        document.getElementById('main-content').style.display = 'block';
+        document.getElementById('progress-wrapper').style.display = 'block';
+        document.getElementById('mentor-fab').style.display = 'flex';
+
+        this.updateStreak();
+        this.recoverHearts();
+        this.updateStatsDisplay();
+        this.startHeartTimer();
+
+        if (!this.playerData.onboardingComplete) {
+            this.showOnboarding();
+        } else {
+            this.renderHomeScreen();
+        }
+    }
+
+    // ═══════════════════════════════════════
+    // Ripple
+    // ═══════════════════════════════════════
+    initRipple() {
+        document.addEventListener('click', (e) => {
+            const target = e.target.closest('.btn, .option-btn, .word-chip, .compare-card, .module-card, .lesson-item, .daily-challenge-btn, .home-path-node:not(.locked)');
+            if (!target) return;
+            const ripple = document.createElement('span');
+            ripple.className = 'ripple-effect';
+            const rect = target.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+            ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+            target.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 600);
+        });
+    }
+
+    // ═══════════════════════════════════════
+    // Data Persistence (LocalStorage)
+    // ═══════════════════════════════════════
+    getDefaultPlayerData() {
+        return {
+            xp: 0, level: 1, hearts: 5, maxHearts: 5,
+            streak: 0, lastPlayDate: null, lastHeartLost: null,
+            completedLessons: {}, achievements: [],
+            totalCorrectAnswers: 0, totalWrongAnswers: 0,
+            perfectLessons: 0, perfectLessonsList: [],
+            dailyChallengeCompleted: null,
+            onboardingComplete: false, longestStreak: 0
+        };
+    }
+
+    loadFromLocalStorage() {
+        try {
+            const saved = localStorage.getItem('claudeCodeGameData');
+            if (saved) return JSON.parse(saved);
+        } catch (e) { /* ignore */ }
+        return null;
+    }
+
+    savePlayerData() {
+        localStorage.setItem('claudeCodeGameData', JSON.stringify(this.playerData));
+    }
+
+    // ═══════════════════════════════════════
+    // Heart Recovery
+    // ═══════════════════════════════════════
+    recoverHearts() {
+        if (this.playerData.hearts >= this.playerData.maxHearts) {
+            this.playerData.lastHeartLost = null; return;
+        }
+        if (!this.playerData.lastHeartLost) return;
+        const lostTime = new Date(this.playerData.lastHeartLost).getTime();
+        const elapsed = Date.now() - lostTime;
+        const recovered = Math.floor(elapsed / (HEART_RECOVERY_MINUTES * 60 * 1000));
+        if (recovered > 0) {
+            this.playerData.hearts = Math.min(this.playerData.maxHearts, this.playerData.hearts + recovered);
+            if (this.playerData.hearts >= this.playerData.maxHearts) {
+                this.playerData.lastHeartLost = null;
+            } else {
+                this.playerData.lastHeartLost = new Date(lostTime + recovered * HEART_RECOVERY_MINUTES * 60 * 1000).toISOString();
+            }
+            this.savePlayerData();
+        }
+    }
+
+    startHeartTimer() {
+        if (this.heartTimerInterval) clearInterval(this.heartTimerInterval);
+        this.heartTimerInterval = setInterval(() => this.updateHeartTimer(), 1000);
+        this.updateHeartTimer();
+    }
+
+    updateHeartTimer() {
+        const bar = document.getElementById('heart-timer-bar');
+        if (this.playerData.hearts >= this.playerData.maxHearts || !this.playerData.lastHeartLost) {
+            bar.style.display = 'none'; return;
+        }
+        bar.style.display = 'block';
+        const lostTime = new Date(this.playerData.lastHeartLost).getTime();
+        const elapsed = Date.now() - lostTime;
+        const totalMs = HEART_RECOVERY_MINUTES * 60 * 1000;
+        const remaining = totalMs - (elapsed % totalMs);
+        const progress = ((totalMs - remaining) / totalMs) * 100;
+        const mins = Math.floor(remaining / 60000);
+        const secs = Math.floor((remaining % 60000) / 1000);
+        document.getElementById('heart-timer-text').innerHTML = `<i class="fa-solid fa-heart"></i> +1 בעוד ${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        document.getElementById('heart-timer-fill').style.width = progress + '%';
+        if (elapsed >= totalMs) { this.recoverHearts(); this.updateStatsDisplay(); }
+    }
+
+    // ═══════════════════════════════════════
+    // Onboarding
+    // ═══════════════════════════════════════
+    showOnboarding() {
+        this.onboardingStep = 0;
+        document.getElementById('onboarding-overlay').style.display = 'flex';
+        this.renderOnboardingStep();
+    }
+
+    renderOnboardingStep() {
+        const steps = [
+            { icon: '<i class="fa-solid fa-terminal"></i>', title: 'ברוכים הבאים ל-Claude Code Master!', text: 'כאן תלמדו את כל מה שצריך לדעת על Claude Code — הכלי שמשנה את הדרך שמפתחים עובדים.' },
+            { icon: '<i class="fa-solid fa-graduation-cap"></i>', title: '15 שיעורים, 7 מודולים', text: 'ממבוא בסיסי ועד טכניקות מתקדמות — Agent SDK, MCP, Hooks ועוד. כל שיעור עם תרגילים אינטראקטיביים.' },
+            { icon: '<i class="fa-solid fa-rocket"></i>', title: 'בואו נתחיל!', text: 'צברו XP, שמרו על סטריק יומי, ופתחו הישגים. מוכנים להיות Claude Code Masters?' }
+        ];
+        const step = steps[this.onboardingStep];
+        document.getElementById('onboarding-step-content').innerHTML = `
+            <span class="onboarding-icon">${step.icon}</span>
+            <h2>${step.title}</h2>
+            <p>${step.text}</p>
+        `;
+        document.getElementById('onboarding-dots').innerHTML = steps.map((_, i) => {
+            let cls = 'onboarding-dot';
+            if (i < this.onboardingStep) cls += ' done';
+            if (i === this.onboardingStep) cls += ' active';
+            return `<div class="${cls}"></div>`;
+        }).join('');
+        document.getElementById('onboarding-btn').textContent = this.onboardingStep === steps.length - 1 ? 'בואו נתחיל!' : 'הבא';
+    }
+
+    nextOnboardingStep() {
+        this.sound.play('click');
+        this.onboardingStep++;
+        if (this.onboardingStep >= 3) {
+            document.getElementById('onboarding-overlay').style.display = 'none';
+            this.playerData.onboardingComplete = true;
+            this.savePlayerData();
+            this.renderHomeScreen();
+        } else {
+            this.renderOnboardingStep();
+        }
+    }
+
+    skipOnboarding() {
+        document.getElementById('onboarding-overlay').style.display = 'none';
+        this.playerData.onboardingComplete = true;
+        this.savePlayerData();
+        this.renderHomeScreen();
+    }
+
+    // ═══════════════════════════════════════
+    // Screen Transitions
+    // ═══════════════════════════════════════
+    transitionTo(renderFn) {
+        const container = document.getElementById('game-container');
+        container.classList.add('fade-out');
+        setTimeout(() => {
+            window.scrollTo({ top: 0, behavior: 'instant' });
+            renderFn.call(this);
+            container.classList.remove('fade-out');
+        }, 200);
+    }
+
+    // ═══════════════════════════════════════
+    // Sound & User Menu
+    // ═══════════════════════════════════════
+    toggleSound() {
+        const enabled = this.sound.toggle();
+        document.getElementById('sound-toggle').innerHTML = enabled ? '<i class="fa-solid fa-volume-high"></i>' : '<i class="fa-solid fa-volume-xmark"></i>';
+        if (enabled) this.sound.play('click');
+    }
+
+    toggleUserMenu() {
+        this.userMenuOpen = !this.userMenuOpen;
+        document.getElementById('user-menu').style.display = this.userMenuOpen ? 'block' : 'none';
+        if (this.userMenuOpen) {
+            setTimeout(() => {
+                const handler = (e) => {
+                    if (!e.target.closest('.user-menu') && !e.target.closest('.user-menu-btn')) {
+                        this.hideUserMenu(); document.removeEventListener('click', handler);
+                    }
+                };
+                document.addEventListener('click', handler);
+            }, 10);
+        }
+    }
+
+    hideUserMenu() {
+        this.userMenuOpen = false;
+        document.getElementById('user-menu').style.display = 'none';
+    }
+
+    resetProgress() {
+        if (!confirm('בטוחים? כל ההתקדמות תימחק!')) return;
+        localStorage.removeItem('claudeCodeGameData');
+        this.playerData = this.getDefaultPlayerData();
+        this.savePlayerData();
+        this.updateStatsDisplay();
+        this.renderHomeScreen();
+        this.hideUserMenu();
+    }
+
+    // ═══════════════════════════════════════
+    // Mentor
+    // ═══════════════════════════════════════
+    createMentorHTML(message, showName = true) {
+        return `
+            <div class="mentor-container mentor-enter">
+                <div class="mentor-avatar">
+                    <i class="fa-solid fa-terminal"></i>
+                </div>
+                <div class="mentor-bubble">
+                    ${showName ? '<div class="mentor-name">Claude — המנטור שלך</div>' : ''}
+                    <div class="mentor-message">${message}</div>
+                </div>
+            </div>
+        `;
+    }
+
+    getRandomMessage(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+    // ═══════════════════════════════════════
+    // Streak
+    // ═══════════════════════════════════════
+    updateStreak() {
+        const today = new Date().toDateString();
+        const lastPlay = this.playerData.lastPlayDate;
+        if (lastPlay) {
+            const lastDate = new Date(lastPlay);
+            const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
+            if (lastPlay === today) { /* already played */ }
+            else if (lastDate.toDateString() === yesterday.toDateString()) {
+                this.playerData.streak++; this.playerData.lastPlayDate = today; this.savePlayerData();
+            } else {
+                this.playerData.streak = 1; this.playerData.lastPlayDate = today; this.savePlayerData();
+            }
+        } else {
+            this.playerData.streak = 1; this.playerData.lastPlayDate = today; this.savePlayerData();
+        }
+        if (this.playerData.streak > (this.playerData.longestStreak || 0)) {
+            this.playerData.longestStreak = this.playerData.streak; this.savePlayerData();
+        }
+    }
+
+    // ═══════════════════════════════════════
+    // Stats Display
+    // ═══════════════════════════════════════
+    updateStatsDisplay() {
+        document.getElementById('xp-value').textContent = this.playerData.xp;
+        document.getElementById('streak-value').textContent = this.playerData.streak;
+        this.renderHearts();
+    }
+
+    renderHearts() {
+        const container = document.getElementById('hearts-container');
+        let html = '';
+        for (let i = 0; i < this.playerData.maxHearts; i++) {
+            html += `<span class="heart ${i >= this.playerData.hearts ? 'empty' : ''}"><i class="fa-solid fa-heart"></i></span>`;
+        }
+        container.innerHTML = html;
+    }
+
+    // ═══════════════════════════════════════
+    // Level System
+    // ═══════════════════════════════════════
+    calculateLevel() {
+        const thresholds = [0, 100, 250, 500, 1000, 2000, 4000, 8000];
+        for (let i = thresholds.length - 1; i >= 0; i--) {
+            if (this.playerData.xp >= thresholds[i]) return i + 1;
+        }
+        return 1;
+    }
+
+    getLevelName(level) {
+        const names = ['Beginner', 'Explorer', 'Developer', 'Engineer', 'Senior', 'Architect', 'Master', 'Claude Whisperer'];
+        return names[level - 1] || 'Claude Whisperer';
+    }
+
+    getLevelProgressInfo() {
+        const thresholds = [0, 100, 250, 500, 1000, 2000, 4000, 8000];
+        const lv = this.playerData.level;
+        const xp = this.playerData.xp;
+        const curr = thresholds[lv - 1] || 0;
+        const next = thresholds[lv] || thresholds[thresholds.length - 1];
+        const progress = Math.min(100, ((xp - curr) / (next - curr)) * 100);
+        return { progress, xpToNext: Math.max(0, next - xp), currentXP: xp, nextThreshold: next };
+    }
+
+    // ═══════════════════════════════════════
+    // Achievements
+    // ═══════════════════════════════════════
+    renderAchievementsGrid() {
+        return this.achievements.slice(0, 8).map(a => {
+            const unlocked = this.playerData.achievements.includes(a.id);
+            return `<div class="achievement-item ${unlocked ? 'unlocked' : 'locked'}">
+                <div class="achievement-icon">${a.icon}</div>
+                <div class="achievement-name">${a.title}</div>
+            </div>`;
+        }).join('');
+    }
+
+    checkAchievements() {
+        let newList = [];
+        this.achievements.forEach(a => {
+            if (!this.playerData.achievements.includes(a.id) && a.condition(this.playerData)) {
+                this.playerData.achievements.push(a.id);
+                newList.push(a);
+            }
+        });
+        if (newList.length > 0) {
+            this.savePlayerData();
+            this.showAchievementPopup(newList[0]);
+        }
+    }
+
+    showAchievementPopup(a) {
+        this.sound.play('achievement');
+        const popup = document.createElement('div');
+        popup.className = 'achievement-popup';
+        popup.innerHTML = `
+            <div class="achievement-popup-icon">${a.icon}</div>
+            <div class="achievement-popup-content">
+                <div class="achievement-popup-title">הישג חדש!</div>
+                <div class="achievement-popup-name">${a.title}</div>
+                <div class="achievement-popup-desc">${a.desc}</div>
+            </div>
+        `;
+        document.body.appendChild(popup);
+        setTimeout(() => popup.classList.add('show'), 100);
+        setTimeout(() => { popup.classList.remove('show'); setTimeout(() => popup.remove(), 500); }, 3000);
+    }
+
+    // ═══════════════════════════════════════
+    // XP & Level Up
+    // ═══════════════════════════════════════
+    addXP(amount) {
+        const oldLevel = this.playerData.level;
+        this.playerData.xp += amount;
+        this.playerData.level = this.calculateLevel();
+        this.savePlayerData();
+        this.updateStatsDisplay();
+        if (this.playerData.level > oldLevel) {
+            this.showLevelUp();
+        }
+    }
+
+    showLevelUp() {
+        this.sound.play('levelUp');
+        const overlay = document.getElementById('level-up-overlay');
+        document.getElementById('level-up-text').innerHTML = `
+            <div style="font-size: 3rem;">🎉</div>
+            <div style="font-size: 1.5rem; font-weight: 700;">רמה ${this.playerData.level}!</div>
+            <div>${this.getLevelName(this.playerData.level)}</div>
+        `;
+        overlay.style.display = 'flex';
+        setTimeout(() => { overlay.style.display = 'none'; }, 2500);
+    }
+
+    // ═══════════════════════════════════════
+    // Daily Challenge
+    // ═══════════════════════════════════════
+    startDailyChallenge() {
+        const today = new Date().toDateString();
+        if (this.playerData.dailyChallengeCompleted === today) return;
+        const available = MODULES.filter((m, i) => i === 0 || this.getModuleProgress(MODULES[i - 1].id) >= 50);
+        if (available.length === 0) { this.transitionTo(() => this.openModule(1)); return; }
+        const random = available[Math.floor(Math.random() * available.length)];
+        this.isDailyChallenge = true;
+        this.dailyChallengeExercisesLeft = 3;
+        this.transitionTo(() => this.openModule(random.id));
+    }
+
+    completeDailyChallenge() {
+        this.playerData.dailyChallengeCompleted = new Date().toDateString();
+        this.addXP(50);
+        this.savePlayerData();
+        this.isDailyChallenge = false;
+        this.showModal('<i class="fa-solid fa-bullseye"></i>', 'אתגר יומי הושלם!', 'קיבלת +50 XP בונוס! חזרו מחר לאתגר חדש.', `<button class="btn btn-primary" onclick="game.closeModal()">מעולה!</button>`);
+    }
+
+    // ═══════════════════════════════════════
+    // Modal
+    // ═══════════════════════════════════════
+    showModal(icon, title, text, buttons) {
+        document.getElementById('modal-icon').innerHTML = icon;
+        document.getElementById('modal-title').textContent = title;
+        document.getElementById('modal-text').textContent = text;
+        document.getElementById('modal-buttons').innerHTML = buttons;
+        document.getElementById('modal-overlay').classList.add('show');
+    }
+
+    closeModal() {
+        document.getElementById('modal-overlay').classList.remove('show');
+    }
+
+    // ═══════════════════════════════════════
+    // Stats Screen
+    // ═══════════════════════════════════════
+    showStats() {
+        this.hideUserMenu();
+        const d = this.playerData;
+        const totalQ = d.totalCorrectAnswers + d.totalWrongAnswers;
+        const accuracy = totalQ > 0 ? Math.round((d.totalCorrectAnswers / totalQ) * 100) : 0;
+        const lessonsCount = Object.keys(d.completedLessons).length;
+        this.showModal('📊', 'הסטטיסטיקות שלי', '', '');
+        document.getElementById('modal-text').innerHTML = `
+            <div style="text-align: right; line-height: 2;">
+                <div>⭐ XP: <strong>${d.xp}</strong></div>
+                <div>🔥 סטריק: <strong>${d.streak}</strong> ימים (שיא: ${d.longestStreak || 0})</div>
+                <div>📚 שיעורים: <strong>${lessonsCount}/15</strong></div>
+                <div>🎯 דיוק: <strong>${accuracy}%</strong></div>
+                <div>✅ תשובות נכונות: <strong>${d.totalCorrectAnswers}</strong></div>
+                <div>✨ שיעורים מושלמים: <strong>${d.perfectLessons}</strong></div>
+                <div>🏅 הישגים: <strong>${d.achievements.length}/${this.achievements.length}</strong></div>
+            </div>
+        `;
+        document.getElementById('modal-buttons').innerHTML = `<button class="btn btn-primary" onclick="game.closeModal()">סגירה</button>`;
+    }
+
+    // ═══════════════════════════════════════
+    // Module Progress
+    // ═══════════════════════════════════════
+    getModuleProgress(moduleId) {
+        const module = MODULES.find(m => m.id === moduleId);
+        if (!module) return 0;
+        const total = module.lessons.length;
+        const done = module.lessons.filter(l => this.playerData.completedLessons[`${moduleId}-${l.id}`]).length;
+        return Math.round((done / total) * 100);
+    }
+
+    // ═══════════════════════════════════════
+    // Home Screen
+    // ═══════════════════════════════════════
+    renderHomeScreen() {
+        this.currentScreen = 'home';
+        const container = document.getElementById('game-container');
+        const welcomeMessage = this.getRandomMessage(this.mentorMessages.welcome);
+        const levelInfo = this.getLevelProgressInfo();
+        const dailyDone = this.playerData.dailyChallengeCompleted === new Date().toDateString();
+
+        document.getElementById('progress-container').style.display = 'none';
+        document.getElementById('footer-actions').style.display = 'none';
+
+        let pathHtml = '';
+
+        // Daily challenge
+        pathHtml += `
+            <div class="home-path-node special" onclick="game.startDailyChallenge()">
+                <div class="home-path-icon">${dailyDone ? '<i class="fa-solid fa-circle-check"></i>' : '<i class="fa-solid fa-bullseye"></i>'}</div>
+                <div class="home-path-info">
+                    <div class="home-path-label">אתגר יומי</div>
+                    <div class="home-path-title">${dailyDone ? 'הושלם היום!' : 'השלימו 3 תרגילים'}</div>
+                    <div class="home-path-desc">${dailyDone ? 'כל הכבוד! חזרו מחר' : 'קבלו בונוס XP!'}</div>
+                </div>
+                <div class="home-path-arrow">${dailyDone ? '' : '←'}</div>
+            </div>`;
+
+        // Modules
+        MODULES.forEach((module, index) => {
+            const progress = this.getModuleProgress(module.id);
+            const isCompleted = progress === 100;
+            const isLocked = index > 0 && this.getModuleProgress(MODULES[index - 1].id) < 50;
+
+            let stateClass = 'available';
+            let stateIcon = module.icon;
+            if (isLocked) { stateClass = 'locked'; stateIcon = '🔒'; }
+            else if (isCompleted) { stateClass = 'completed'; stateIcon = '✅'; }
+
+            pathHtml += `
+                <div class="home-path-node ${stateClass}" onclick="${isLocked ? '' : `game.transitionTo(function() { game.openModule(${module.id}) })`}">
+                    <div class="home-path-icon">${stateIcon}</div>
+                    <div class="home-path-info">
+                        <div class="home-path-label">מודול ${index + 1}</div>
+                        <div class="home-path-title">${module.title}</div>
+                        <div class="home-path-desc">${module.description}</div>
+                        <div class="home-path-progress">
+                            <div class="home-path-progress-bar"><div class="home-path-progress-fill" style="width: ${progress}%"></div></div>
+                            <span class="home-path-progress-text">${progress}%</span>
+                        </div>
+                    </div>
+                    <div class="home-path-arrow">${isLocked ? '' : '←'}</div>
+                </div>`;
+        });
+
+        // Goal
+        const totalProgress = MODULES.reduce((sum, m) => sum + this.getModuleProgress(m.id), 0);
+        const overallProgress = Math.round(totalProgress / MODULES.length);
+        pathHtml += `
+            <div class="home-path-node goal" style="cursor: default;">
+                <div class="home-path-icon">🏆</div>
+                <div class="home-path-info">
+                    <div class="home-path-label">יעד</div>
+                    <div class="home-path-title">Claude Code Master</div>
+                    <div class="home-path-desc">השלימו את כל המודולים</div>
+                    <div class="home-path-progress">
+                        <div class="home-path-progress-bar"><div class="home-path-progress-fill" style="width: ${overallProgress}%"></div></div>
+                        <span class="home-path-progress-text">${overallProgress}%</span>
+                    </div>
+                </div>
+            </div>`;
+
+        container.innerHTML = `
+            ${this.createMentorHTML(welcomeMessage)}
+            <div class="level-progress-container">
+                <div class="level-info">
+                    <div class="level-current">
+                        <span class="level-badge">רמה ${this.playerData.level}</span>
+                        <span class="level-name">${this.getLevelName(this.playerData.level)}</span>
+                    </div>
+                    <span class="level-next">${levelInfo.xpToNext} XP לרמה הבאה</span>
+                </div>
+                <div class="level-progress-bar"><div class="level-progress-fill" style="width: ${levelInfo.progress}%"></div></div>
+            </div>
+            <div class="home-journey-path">${pathHtml}</div>
+            <div class="achievements-section">
+                <h3 class="achievements-title"><i class="fa-solid fa-trophy"></i> הישגים</h3>
+                <div class="achievements-grid">${this.renderAchievementsGrid()}</div>
+            </div>
+        `;
+    }
+
+    // ═══════════════════════════════════════
+    // Module Screen
+    // ═══════════════════════════════════════
+    openModule(moduleId) {
+        const module = MODULES.find(m => m.id === moduleId);
+        if (!module) return;
+        this.currentModule = module;
+        this.currentScreen = 'module';
+        const container = document.getElementById('game-container');
+        const introMessage = this.mentorMessages.moduleIntro[moduleId] || 'בואו נתחיל!';
+
+        const lessonsHtml = module.lessons.map(lesson => {
+            const key = `${moduleId}-${lesson.id}`;
+            const isCompleted = !!this.playerData.completedLessons[key];
+            const isPerfect = this.playerData.perfectLessonsList && this.playerData.perfectLessonsList.includes(key);
+            return `
+                <div class="lesson-item ${isCompleted ? 'completed' : ''}" onclick="game.transitionTo(function() { game.startLesson(${moduleId}, ${lesson.id}) })">
+                    <div class="lesson-icon">${isPerfect ? '⭐' : isCompleted ? '✅' : '📘'}</div>
+                    <div class="lesson-info">
+                        <div class="lesson-title">${lesson.title}</div>
+                        <div class="lesson-exercises">${lesson.exercises.length} תרגילים</div>
+                    </div>
+                    <div class="lesson-arrow">←</div>
+                </div>`;
+        }).join('');
+
+        container.innerHTML = `
+            <button class="back-btn" onclick="game.transitionTo(function() { game.renderHomeScreen() })">← חזרה</button>
+            ${this.createMentorHTML(introMessage)}
+            <div class="module-header">
+                <div class="module-icon-large">${module.icon}</div>
+                <h2>${module.title}</h2>
+                <p class="module-desc">${module.description}</p>
+            </div>
+            <div class="lessons-list">${lessonsHtml}</div>
+        `;
+    }
+
+    // ═══════════════════════════════════════
+    // Lesson
+    // ═══════════════════════════════════════
+    startLesson(moduleId, lessonId) {
+        const module = MODULES.find(m => m.id === moduleId);
+        if (!module) return;
+        const lesson = module.lessons.find(l => l.id === lessonId);
+        if (!lesson) return;
+
+        this.currentModule = module;
+        this.currentLesson = lesson;
+        this.currentExerciseIndex = 0;
+        this.lessonMistakes = 0;
+        this.currentScreen = 'lesson';
+
+        // Show lesson intro (summary)
+        const container = document.getElementById('game-container');
+        const startMessage = this.getRandomMessage(this.mentorMessages.lessonStart);
+
+        container.innerHTML = `
+            <button class="back-btn" onclick="game.exitLesson()">✕</button>
+            ${this.createMentorHTML(startMessage)}
+            <div class="lesson-intro">
+                <h2 class="lesson-intro-title">${lesson.title}</h2>
+                <div class="lesson-summary">
+                    <div class="summary-card">
+                        <div class="summary-icon"><i class="fa-solid fa-lightbulb"></i></div>
+                        <div class="summary-text">${lesson.summary}</div>
+                    </div>
+                    ${lesson.summaryDetail ? `
+                    <div class="summary-detail">
+                        <div class="summary-detail-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        <div class="summary-detail-text">${lesson.summaryDetail}</div>
+                    </div>` : ''}
+                </div>
+                <button class="btn btn-primary btn-full" onclick="game.beginExercises()">
+                    <i class="fa-solid fa-play"></i> התחילו לתרגל (${lesson.exercises.length} תרגילים)
+                </button>
+            </div>
+        `;
+    }
+
+    beginExercises() {
+        this.sound.play('click');
+        document.getElementById('progress-container').style.display = 'block';
+        this.renderExercise();
+    }
+
+    exitLesson() {
+        this.sound.play('click');
+        document.getElementById('progress-container').style.display = 'none';
+        document.getElementById('footer-actions').style.display = 'none';
+        document.getElementById('feedback-panel').classList.remove('show');
+        this.transitionTo(() => this.openModule(this.currentModule.id));
+    }
+
+    updateProgressBar() {
+        if (!this.currentLesson) return;
+        const total = this.currentLesson.exercises.length;
+        const current = this.currentExerciseIndex;
+        const pct = Math.round((current / total) * 100);
+        document.getElementById('progress-bar').style.width = pct + '%';
+    }
+
+    showFooter() {
+        document.getElementById('footer-actions').style.display = 'block';
+        document.getElementById('check-btn').disabled = true;
+    }
+
+    enableCheckButton() {
+        document.getElementById('check-btn').disabled = false;
+    }
+
+    // ═══════════════════════════════════════
+    // Render Exercise
+    // ═══════════════════════════════════════
+    renderExercise() {
+        const exercise = this.currentLesson.exercises[this.currentExerciseIndex];
+        if (!exercise) { this.completeLesson(); return; }
+
+        this.selectedAnswer = null;
+        this.exerciseAnswered = false;
+        this.updateProgressBar();
+        const container = document.getElementById('game-container');
+
+        switch (exercise.type) {
+            case 'multiple-choice': this.renderMultipleChoice(container, exercise); break;
+            case 'fill-blank': this.renderFillBlank(container, exercise); break;
+            case 'order': this.renderOrder(container, exercise); break;
+            case 'identify': this.renderIdentify(container, exercise); break;
+            case 'compare': this.renderCompare(container, exercise); break;
+            case 'improve': this.renderImprove(container, exercise); break;
+            case 'match': this.renderMatch(container, exercise); break;
+        }
+        this.showFooter();
+        if (exercise.type === 'order') this.enableCheckButton();
+    }
+
+    // ═══════════════════════════════════════
+    // Exercise Renderers
+    // ═══════════════════════════════════════
+    renderMultipleChoice(container, exercise) {
+        const letters = ['א', 'ב', 'ג', 'ד'];
+        container.innerHTML = `
+            <button class="back-btn" onclick="game.exitLesson()">✕</button>
+            <div class="exercise-container">
+                <div class="exercise-type"><i class="fa-solid fa-list"></i> בחירה מרובה</div>
+                <div class="exercise-question">${exercise.question}</div>
+                <div class="options-list">
+                    ${exercise.options.map((opt, i) => `
+                        <button class="option-btn" onclick="game.selectOption(${i})">
+                            <span class="option-letter">${letters[i]}</span>
+                            <span>${opt}</span>
+                        </button>
+                    `).join('')}
+                </div>
+            </div>`;
+    }
+
+    selectOption(index) {
+        if (this.exerciseAnswered) return;
+        this.sound.play('click');
+        this.selectedAnswer = index;
+        document.querySelectorAll('.option-btn').forEach((btn, i) => btn.classList.toggle('selected', i === index));
+        this.enableCheckButton();
+    }
+
+    renderFillBlank(container, exercise) {
+        const templateHtml = exercise.template.replace('___', '<span class="blank-slot" id="blank-slot">___</span>');
+        const shuffled = this.shuffleArray([...exercise.options]);
+        container.innerHTML = `
+            <button class="back-btn" onclick="game.exitLesson()">✕</button>
+            <div class="exercise-container">
+                <div class="exercise-type"><i class="fa-solid fa-pen"></i> השלמת משפט</div>
+                <div class="exercise-question">${exercise.question}</div>
+                <div class="fill-blank-container">
+                    <div class="template-text">${templateHtml}</div>
+                    <div class="word-bank">${shuffled.map(word => `
+                        <button class="word-chip" data-word-index="${exercise.options.indexOf(word)}" onclick="game.selectWord(this)">${word}</button>
+                    `).join('')}</div>
+                </div>
+            </div>`;
+    }
+
+    selectWord(el) {
+        if (this.exerciseAnswered) return;
+        this.sound.play('click');
+        this.selectedAnswer = parseInt(el.dataset.wordIndex);
+        document.getElementById('blank-slot').textContent = el.textContent;
+        document.getElementById('blank-slot').classList.add('filled');
+        document.querySelectorAll('.word-chip').forEach(c => c.classList.toggle('selected', c === el));
+        this.enableCheckButton();
+    }
+
+    renderOrder(container, exercise) {
+        const shuffled = this.shuffleArray([...exercise.items].map((item, i) => ({ item, originalIndex: i })));
+        container.innerHTML = `
+            <button class="back-btn" onclick="game.exitLesson()">✕</button>
+            <div class="exercise-container">
+                <div class="exercise-type"><i class="fa-solid fa-sort"></i> סידור לפי סדר</div>
+                <div class="exercise-question">${exercise.question}</div>
+                <div class="order-container" id="order-container">
+                    ${shuffled.map((obj, i) => `
+                        <div class="order-item" draggable="true" data-index="${i}" data-original="${obj.originalIndex}"
+                             ondragstart="game.dragStart(event)" ondragover="game.dragOver(event)"
+                             ondrop="game.drop(event)" ondragend="game.dragEnd(event)"
+                             ontouchstart="game.touchStart(event)" ontouchmove="game.touchMove(event)" ontouchend="game.touchEnd(event)">
+                            <span class="order-number">${i + 1}</span>
+                            <span>${obj.item}</span>
+                            <span class="drag-handle">⋮⋮</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>`;
+        this.enableCheckButton();
+    }
+
+    // Drag & Drop
+    dragStart(e) { e.target.classList.add('dragging'); e.dataTransfer.setData('text/plain', e.target.dataset.index); }
+    dragOver(e) { e.preventDefault(); const dragging = document.querySelector('.dragging'); const target = e.target.closest('.order-item'); if (target && target !== dragging) { const container = document.getElementById('order-container'); const rect = target.getBoundingClientRect(); const midY = rect.top + rect.height / 2; if (e.clientY < midY) { container.insertBefore(dragging, target); } else { container.insertBefore(dragging, target.nextSibling); } this.updateOrderNumbers(); } }
+    drop(e) { e.preventDefault(); }
+    dragEnd(e) { e.target.classList.remove('dragging'); this.updateOrderNumbers(); }
+
+    // Touch support
+    touchStart(e) { this._touchItem = e.target.closest('.order-item'); if (!this._touchItem) return; this._touchItem.classList.add('dragging'); this._touchStartY = e.touches[0].clientY; }
+    touchMove(e) { if (!this._touchItem) return; e.preventDefault(); const touch = e.touches[0]; const items = [...document.getElementById('order-container').children]; const target = items.find(item => { if (item === this._touchItem) return false; const rect = item.getBoundingClientRect(); return touch.clientY > rect.top && touch.clientY < rect.bottom; }); if (target) { const container = document.getElementById('order-container'); const rect = target.getBoundingClientRect(); if (touch.clientY < rect.top + rect.height / 2) { container.insertBefore(this._touchItem, target); } else { container.insertBefore(this._touchItem, target.nextSibling); } this.updateOrderNumbers(); } }
+    touchEnd(e) { if (this._touchItem) { this._touchItem.classList.remove('dragging'); this._touchItem = null; } }
+
+    updateOrderNumbers() {
+        document.querySelectorAll('.order-item .order-number').forEach((el, i) => el.textContent = i + 1);
+    }
+
+    renderCompare(container, exercise) {
+        container.innerHTML = `
+            <button class="back-btn" onclick="game.exitLesson()">✕</button>
+            <div class="exercise-container">
+                <div class="exercise-type"><i class="fa-solid fa-scale-balanced"></i> השוואה</div>
+                <div class="exercise-question">${exercise.question}</div>
+                <div class="compare-cards">
+                    <div class="compare-card" onclick="game.selectCompare(0)">
+                        <div class="compare-label">${exercise.optionA.label}</div>
+                        <div class="compare-text">${exercise.optionA.text}</div>
+                    </div>
+                    <div class="compare-card" onclick="game.selectCompare(1)">
+                        <div class="compare-label">${exercise.optionB.label}</div>
+                        <div class="compare-text">${exercise.optionB.text}</div>
+                    </div>
+                </div>
+            </div>`;
+    }
+
+    selectCompare(index) {
+        if (this.exerciseAnswered) return;
+        this.sound.play('click');
+        this.selectedAnswer = index;
+        document.querySelectorAll('.compare-card').forEach((c, i) => c.classList.toggle('selected', i === index));
+        this.enableCheckButton();
+    }
+
+    renderImprove(container, exercise) {
+        const letters = ['א', 'ב', 'ג', 'ד'];
+        container.innerHTML = `
+            <button class="back-btn" onclick="game.exitLesson()">✕</button>
+            <div class="exercise-container">
+                <div class="exercise-type"><i class="fa-solid fa-wand-magic-sparkles"></i> שיפור</div>
+                <div class="exercise-question">${exercise.question}</div>
+                <div class="improve-original">
+                    <div class="improve-label">המקור:</div>
+                    <div class="improve-text">${exercise.original}</div>
+                </div>
+                <div class="options-list">
+                    ${exercise.options.map((opt, i) => `
+                        <button class="option-btn" onclick="game.selectOption(${i})">
+                            <span class="option-letter">${letters[i]}</span>
+                            <span>${opt}</span>
+                        </button>
+                    `).join('')}
+                </div>
+            </div>`;
+    }
+
+    renderMatch(container, exercise) {
+        const shuffledRight = this.shuffleArray([...exercise.pairs.map(p => p.right)]);
+        container.innerHTML = `
+            <button class="back-btn" onclick="game.exitLesson()">✕</button>
+            <div class="exercise-container">
+                <div class="exercise-type"><i class="fa-solid fa-link"></i> התאמה</div>
+                <div class="exercise-question">${exercise.question}</div>
+                <div class="match-container">
+                    <div class="match-column match-left">
+                        ${exercise.pairs.map((p, i) => `<div class="match-item" data-left="${i}" onclick="game.selectMatchLeft(${i})">${p.left}</div>`).join('')}
+                    </div>
+                    <div class="match-column match-right">
+                        ${shuffledRight.map((text, i) => `<div class="match-item" data-right="${exercise.pairs.findIndex(p => p.right === text)}" onclick="game.selectMatchRight(this)">${text}</div>`).join('')}
+                    </div>
+                </div>
+                <div class="match-pairs-display" id="match-pairs-display"></div>
+            </div>`;
+        this._matchState = { selectedLeft: null, pairs: [], total: exercise.pairs.length };
+    }
+
+    selectMatchLeft(index) {
+        if (this.exerciseAnswered) return;
+        this.sound.play('click');
+        this._matchState.selectedLeft = index;
+        document.querySelectorAll('.match-left .match-item').forEach((el, i) => el.classList.toggle('selected', i === index));
+    }
+
+    selectMatchRight(el) {
+        if (this.exerciseAnswered || this._matchState.selectedLeft === null) return;
+        this.sound.play('click');
+        const rightIndex = parseInt(el.dataset.right);
+        const leftIndex = this._matchState.selectedLeft;
+
+        // Check if already matched
+        if (this._matchState.pairs.some(p => p.left === leftIndex || p.right === rightIndex)) return;
+
+        this._matchState.pairs.push({ left: leftIndex, right: rightIndex });
+
+        // Visual feedback
+        document.querySelectorAll('.match-left .match-item')[leftIndex].classList.add('matched');
+        el.classList.add('matched');
+        document.querySelectorAll('.match-left .match-item').forEach(e => e.classList.remove('selected'));
+        this._matchState.selectedLeft = null;
+
+        // Update display
+        const exercise = this.currentLesson.exercises[this.currentExerciseIndex];
+        const display = document.getElementById('match-pairs-display');
+        display.innerHTML = this._matchState.pairs.map(p => `
+            <div class="match-pair-row">${exercise.pairs[p.left].left} ↔ ${exercise.pairs[p.right].right}</div>
+        `).join('');
+
+        if (this._matchState.pairs.length === this._matchState.total) {
+            this.selectedAnswer = this._matchState.pairs;
+            this.enableCheckButton();
+        }
+    }
+
+    renderIdentify(container, exercise) {
+        const words = exercise.text.split('');
+        container.innerHTML = `
+            <button class="back-btn" onclick="game.exitLesson()">✕</button>
+            <div class="exercise-container">
+                <div class="exercise-type"><i class="fa-solid fa-highlighter"></i> זיהוי</div>
+                <div class="exercise-question">${exercise.question}</div>
+                <div class="identify-text" id="identify-text">${exercise.text}</div>
+                <div class="identify-hint">סמנו את החלק הרלוונטי בטקסט</div>
+            </div>`;
+
+        const textEl = document.getElementById('identify-text');
+        textEl.addEventListener('mouseup', () => this.handleTextSelection(exercise));
+        textEl.addEventListener('touchend', () => this.handleTextSelection(exercise));
+    }
+
+    handleTextSelection(exercise) {
+        const selection = window.getSelection();
+        if (!selection || selection.isCollapsed) return;
+        const text = selection.toString().trim();
+        if (text.length < 2) return;
+        this.sound.play('click');
+        const fullText = exercise.text;
+        const start = fullText.indexOf(text);
+        if (start === -1) return;
+        this.selectedAnswer = { start, end: start + text.length, text };
+        this.enableCheckButton();
+
+        // Highlight
+        const textEl = document.getElementById('identify-text');
+        textEl.innerHTML = fullText.substring(0, start) + `<span class="identify-highlight">${text}</span>` + fullText.substring(start + text.length);
+    }
+
+    // ═══════════════════════════════════════
+    // Check Answer
+    // ═══════════════════════════════════════
+    checkAnswer() {
+        if (this.exerciseAnswered || this.selectedAnswer === null) return;
+        this.exerciseAnswered = true;
+        this.sound.play('click');
+
+        const exercise = this.currentLesson.exercises[this.currentExerciseIndex];
+        let isCorrect = false;
+
+        switch (exercise.type) {
+            case 'multiple-choice':
+            case 'fill-blank':
+            case 'improve':
+                isCorrect = this.selectedAnswer === exercise.correct;
+                break;
+            case 'compare':
+                isCorrect = this.selectedAnswer === exercise.correct;
+                break;
+            case 'order': {
+                const items = document.querySelectorAll('.order-item');
+                const userOrder = [...items].map(el => parseInt(el.dataset.original));
+                isCorrect = JSON.stringify(userOrder) === JSON.stringify(exercise.correctOrder);
+                break;
+            }
+            case 'match': {
+                isCorrect = this._matchState.pairs.every(p => p.left === p.right);
+                break;
+            }
+            case 'identify': {
+                const [cStart, cEnd] = exercise.correctRange;
+                const sel = this.selectedAnswer;
+                const overlap = Math.max(0, Math.min(sel.end, cEnd) - Math.max(sel.start, cStart));
+                const correctLen = cEnd - cStart;
+                isCorrect = overlap / correctLen >= 0.5;
+                break;
+            }
+        }
+
+        // Visual feedback on options
+        if (exercise.type === 'multiple-choice' || exercise.type === 'improve') {
+            document.querySelectorAll('.option-btn').forEach((btn, i) => {
+                if (i === exercise.correct) btn.classList.add('correct');
+                else if (i === this.selectedAnswer && !isCorrect) btn.classList.add('wrong');
+            });
+        } else if (exercise.type === 'compare') {
+            document.querySelectorAll('.compare-card').forEach((c, i) => {
+                if (i === exercise.correct) c.classList.add('correct');
+                else if (i === this.selectedAnswer && !isCorrect) c.classList.add('wrong');
+            });
+        } else if (exercise.type === 'fill-blank') {
+            const slot = document.getElementById('blank-slot');
+            if (slot) slot.classList.add(isCorrect ? 'correct' : 'wrong');
+        }
+
+        if (isCorrect) {
+            this.sound.play('correct');
+            this.addXP(10);
+            this.playerData.totalCorrectAnswers++;
+        } else {
+            this.sound.play('wrong');
+            this.playerData.totalWrongAnswers++;
+            this.lessonMistakes++;
+            if (this.playerData.hearts > 0) {
+                this.playerData.hearts--;
+                if (!this.playerData.lastHeartLost) this.playerData.lastHeartLost = new Date().toISOString();
+                this.updateStatsDisplay();
+            }
+        }
+        this.savePlayerData();
+
+        // Show feedback
+        const feedbackPanel = document.getElementById('feedback-panel');
+        const feedbackIcon = document.getElementById('feedback-icon');
+        const feedbackTitle = document.getElementById('feedback-title');
+        const feedbackExplanation = document.getElementById('feedback-explanation');
+        const feedbackBtn = document.getElementById('feedback-btn');
+
+        if (isCorrect) {
+            feedbackPanel.className = 'feedback-panel correct';
+            feedbackIcon.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
+            feedbackTitle.textContent = this.getRandomMessage(this.mentorMessages.correctAnswer);
+        } else {
+            feedbackPanel.className = 'feedback-panel wrong';
+            feedbackIcon.innerHTML = '<i class="fa-solid fa-circle-xmark"></i>';
+            feedbackTitle.textContent = this.getRandomMessage(this.mentorMessages.wrongAnswer);
+        }
+
+        // Wrong-specific explanation
+        let explanation = exercise.explanation;
+        if (!isCorrect && exercise.wrongExplanations && exercise.wrongExplanations[this.selectedAnswer]) {
+            explanation = exercise.wrongExplanations[this.selectedAnswer] + ' ' + exercise.explanation;
+        }
+        feedbackExplanation.textContent = explanation;
+
+        feedbackBtn.textContent = 'המשך';
+        feedbackBtn.onclick = () => this.continueToNext();
+        feedbackPanel.classList.add('show');
+
+        // Request AI mentor feedback (async, adds to panel when ready)
+        this.showMentorFeedback(exercise, isCorrect, this.selectedAnswer);
+
+        // Hide footer check button
+        document.getElementById('footer-actions').style.display = 'none';
+    }
+
+    continueToNext() {
+        this.sound.play('click');
+        document.getElementById('feedback-panel').classList.remove('show');
+        this.currentExerciseIndex++;
+
+        if (this.isDailyChallenge) {
+            this.dailyChallengeExercisesLeft--;
+            if (this.dailyChallengeExercisesLeft <= 0) {
+                this.completeDailyChallenge();
+                this.transitionTo(() => this.renderHomeScreen());
+                return;
+            }
+        }
+
+        setTimeout(() => this.renderExercise(), 300);
+    }
+
+    // ═══════════════════════════════════════
+    // Complete Lesson
+    // ═══════════════════════════════════════
+    completeLesson() {
+        const key = `${this.currentModule.id}-${this.currentLesson.id}`;
+        const isFirstTime = !this.playerData.completedLessons[key];
+
+        this.playerData.completedLessons[key] = true;
+        if (isFirstTime) this.addXP(30);
+
+        if (this.lessonMistakes === 0) {
+            this.playerData.perfectLessons = (this.playerData.perfectLessons || 0) + 1;
+            if (!this.playerData.perfectLessonsList) this.playerData.perfectLessonsList = [];
+            if (!this.playerData.perfectLessonsList.includes(key)) {
+                this.playerData.perfectLessonsList.push(key);
+                if (isFirstTime) this.addXP(20);
+            }
+        }
+
+        this.savePlayerData();
+        this.checkAchievements();
+
+        document.getElementById('progress-container').style.display = 'none';
+        document.getElementById('footer-actions').style.display = 'none';
+
+        const container = document.getElementById('game-container');
+        const total = this.currentLesson.exercises.length;
+        const correct = total - this.lessonMistakes;
+        const accuracy = Math.round((correct / total) * 100);
+        const completeMsg = this.getRandomMessage(this.mentorMessages.lessonComplete);
+
+        container.innerHTML = `
+            ${this.createMentorHTML(completeMsg)}
+            <div class="lesson-complete-card">
+                <div class="complete-icon">🎉</div>
+                <h2>שיעור הושלם!</h2>
+                <h3>${this.currentLesson.title}</h3>
+                <div class="complete-stats">
+                    <div class="complete-stat">
+                        <div class="complete-stat-value">${accuracy}%</div>
+                        <div class="complete-stat-label">דיוק</div>
+                    </div>
+                    <div class="complete-stat">
+                        <div class="complete-stat-value">${correct}/${total}</div>
+                        <div class="complete-stat-label">תשובות נכונות</div>
+                    </div>
+                    <div class="complete-stat">
+                        <div class="complete-stat-value">+${isFirstTime ? (this.lessonMistakes === 0 ? 60 : 40) : 10}</div>
+                        <div class="complete-stat-label">XP</div>
+                    </div>
+                </div>
+                ${this.lessonMistakes === 0 ? '<div class="perfect-badge">✨ שיעור מושלם — Zero Bugs!</div>' : ''}
+                <button class="btn btn-primary btn-full" onclick="game.transitionTo(function() { game.openModule(game.currentModule.id) })">חזרה למודול</button>
+                <button class="btn btn-secondary btn-full" onclick="game.transitionTo(function() { game.renderHomeScreen() })">מסך ראשי</button>
+            </div>
+        `;
+    }
+
+    // ═══════════════════════════════════════
+    // AI Mentor Chat
+    // ═══════════════════════════════════════
+    toggleMentorChat() {
+        const panel = document.getElementById('mentor-chat-panel');
+        if (panel.style.display === 'none' || !panel.style.display) {
+            panel.style.display = 'flex';
+        } else {
+            panel.style.display = 'none';
+        }
+    }
+
+    async sendMentorChat() {
+        const input = document.getElementById('mentor-chat-input');
+        const msg = input.value.trim();
+        if (!msg) return;
+        input.value = '';
+
+        const messages = document.getElementById('mentor-chat-messages');
+        messages.innerHTML += `<div class="mentor-msg mentor-msg-user">${msg}</div>`;
+        messages.scrollTop = messages.scrollHeight;
+
+        // Show typing
+        const typingId = 'typing-' + Date.now();
+        messages.innerHTML += `<div class="mentor-msg mentor-msg-ai mentor-typing" id="${typingId}"><span class="typing-dots">...</span></div>`;
+        messages.scrollTop = messages.scrollHeight;
+
+        const moduleName = this.currentModule ? this.currentModule.title : null;
+        const response = await this.mentor.chat(msg, this.playerData.level, moduleName);
+
+        const typingEl = document.getElementById(typingId);
+        if (typingEl) {
+            typingEl.classList.remove('mentor-typing');
+            typingEl.innerHTML = response || 'סליחה, לא הצלחתי לענות עכשיו. נסו שוב!';
+        }
+        messages.scrollTop = messages.scrollHeight;
+    }
+
+    async showMentorFeedback(exercise, isCorrect, selectedAnswer) {
+        const response = await this.mentor.getFeedback(exercise, isCorrect, selectedAnswer);
+        if (response) {
+            const feedbackEl = document.getElementById('feedback-explanation');
+            if (feedbackEl) {
+                feedbackEl.innerHTML += `<div class="ai-feedback"><span class="ai-badge"><i class="fa-solid fa-robot"></i> קלוד:</span> ${response}</div>`;
+            }
+        }
+    }
+
+    // ═══════════════════════════════════════
+    // Helpers
+    // ═══════════════════════════════════════
+    shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+}
+
+// Init
+const game = new ClaudeCodeGame();
