@@ -677,6 +677,23 @@ const MODULES = [
                         items: ["בוחרים אירוע (PreToolUse/PostToolUse/...)", "מגדירים matcher — על אילו כלים", "כותבים את פקודת ה-shell", "מוסיפים ל-settings.json"],
                         correctOrder: [0, 1, 2, 3],
                         explanation: "קודם בוחרים אירוע, אז מגדירים על מה הוא רץ, כותבים את הפקודה, ומוסיפים לקובץ ההגדרות."
+                    },
+                    {
+                        type: "improve",
+                        question: "איך לשפר את ה-hook הזה?",
+                        original: "PostToolUse על כל כלי → מריץ npm test",
+                        options: ["PostToolUse על Write בלבד → מריץ eslint --fix על הקובץ שנשתנה", "PostToolUse על כל כלי → מריץ npm run build", "PreToolUse על Read → מריץ npm test", "Stop → מריץ npm test"],
+                        correct: 0,
+                        explanation: "hook ממוקד (רק על Write, רק eslint על הקובץ הרלוונטי) הוא יעיל יותר מ-hook שרץ על כל פעולה.",
+                        wrongExplanations: [null, "build על כל כלי זה מוגזם — ייקח הרבה זמן.", "test על Read לא הגיוני — לא שינינו שום דבר.", "Stop מתאים לפעולות שונות, לא ל-linting."]
+                    },
+                    {
+                        type: "multiple-choice",
+                        question: "מה Hook מסוג PreToolUse יכול לעשות?",
+                        options: ["לחסום פעולה לפני שהיא קורית", "רק לתעד פעולות", "לשנות קבצים", "להוסיף XP"],
+                        correct: 0,
+                        explanation: "PreToolUse רץ לפני שכלי מופעל — הוא יכול לחסום, לאשר, או להוסיף הקשר לפני הביצוע.",
+                        wrongExplanations: [null, "הוא יכול גם לחסום, לא רק לתעד.", "הוא לא משנה קבצים — הוא מגיב לאירועים.", "אין קשר ל-XP — זה לא משחק."]
                     }
                 ]
             },
@@ -733,6 +750,23 @@ const MODULES = [
                         items: ["התקנת חבילת MCP (npm install)", "הוספת הגדרה ל-settings.json", "הפעלה מחדש של Claude Code", "שימוש בכלים החדשים בשיחה"],
                         correctOrder: [0, 1, 2, 3],
                         explanation: "מתקינים, מגדירים, מפעילים מחדש — ואז הכלים זמינים אוטומטית."
+                    },
+                    {
+                        type: "improve",
+                        question: "איך עדיף להוסיף יכולת שליטה בדפדפן ל-Claude Code?",
+                        original: "לכתוב סקריפט Puppeteer ולהריץ דרך Bash",
+                        options: ["להתקין שרת MCP של Chrome DevTools — Claude Code ישתמש בכלים ישירות", "לכתוב API wrapper ב-Python", "להשתמש ב-Selenium", "לצלם screenshots ידנית"],
+                        correct: 0,
+                        explanation: "שרת MCP של Chrome DevTools נותן ל-Claude Code גישה ישירה לדפדפן — screenshots, קליקים, ניווט — בלי לכתוב קוד.",
+                        wrongExplanations: [null, "עובד אבל דורש הרבה קוד. MCP נותן את זה מוכן.", "Selenium מיושן ומסובך — MCP הרבה יותר פשוט.", "לא יעיל ולא אוטומטי."]
+                    },
+                    {
+                        type: "multiple-choice",
+                        question: "מה קורה כש-Claude Code מזהה שרת MCP מוגדר?",
+                        options: ["הכלים של ה-MCP נטענים אוטומטית ומתווספים ליכולות", "צריך להפעיל כל כלי ידנית", "ה-MCP רץ רק כשמבקשים", "צריך לייבא ב-CLAUDE.md"],
+                        correct: 0,
+                        explanation: "שרתי MCP שמוגדרים ב-settings.json נטענים אוטומטית כשClaude Code נפתח. הכלים מתווספים ליכולות בלי שום פעולה נוספת.",
+                        wrongExplanations: [null, "הכלים זמינים אוטומטית — לא צריך הפעלה ידנית.", "MCP רץ ברקע כל הזמן, לא רק על דרישה.", "MCP מוגדר ב-settings.json, לא ב-CLAUDE.md."]
                     }
                 ]
             }
@@ -862,6 +896,23 @@ const MODULES = [
                         items: ["הגדרת tools (פעולות שה-agent יכול לעשות)", "כתיבת system prompt (התנהגות)", "חיבור למודל (Claude)", "orchestration — לוגיקת זרימה"],
                         correctOrder: [0, 1, 2, 3],
                         explanation: "קודם מגדירים מה ה-agent יכול לעשות, אז איך הוא מתנהג, מחברים ל-AI, ומגדירים זרימה."
+                    },
+                    {
+                        type: "improve",
+                        question: "מה הגישה הטובה יותר לאוטומציית code review?",
+                        original: "כל פעם לבקש מ-Claude Code ידנית: תעשה review על הPR",
+                        options: ["לבנות Agent SDK שרץ אוטומטית על כל PR חדש ב-CI/CD", "לכתוב סקריפט bash שבודק syntax", "לבקש מ-ChatGPT ידנית", "להשתמש ב-linter בלבד"],
+                        correct: 0,
+                        explanation: "Agent SDK מאפשר לבנות agent חוזר שרץ אוטומטית — מושלם ל-CI/CD. בקשה ידנית לא סקלאבילית.",
+                        wrongExplanations: [null, "Syntax check זה רק חלק קטן — agent יכול לבדוק לוגיקה, אבטחה, סגנון.", "לא אוטומטי ולא משולב בתהליך.", "Linter בודק סגנון, לא לוגיקה עסקית."]
+                    },
+                    {
+                        type: "multiple-choice",
+                        question: "מה היתרון של Agent SDK על סקריפט Python רגיל שקורא ל-Claude API?",
+                        options: ["Agent SDK מספק שלד מוכן עם tools, orchestration, ו-error handling", "Agent SDK יותר מהיר", "Agent SDK חינמי", "אין יתרון"],
+                        correct: 0,
+                        explanation: "Agent SDK חוסך עבודה — מספק infrastructure מוכן לtools, memory, error handling, ו-orchestration. בלעדיו צריך לבנות הכל מאפס.",
+                        wrongExplanations: [null, "המהירות דומה — היתרון הוא בתשתית המוכנה.", "שניהם עולים כסף (API calls).", "יש יתרון ברור — תשתית מוכנה vs לבנות מאפס."]
                     }
                 ]
             }
@@ -919,6 +970,30 @@ const MODULES = [
                             { left: "Code review", right: "Sonnet/Opus, לפי מורכבות" }
                         ],
                         explanation: "התאמת מודל + thinking mode למשימה = יעילות מקסימלית. לא כל משימה צריכה Opus + thinking."
+                    },
+                    {
+                        type: "order",
+                        question: "סדרו את המשימות מפשוטה למורכבת (כשExtended Thinking הכי שווה):",
+                        items: ["שינוי טקסט בכפתור", "תיקון באג בפונקציה", "Refactoring של מודול שלם", "תכנון ארכיטקטורת מערכת חדשה"],
+                        correctOrder: [0, 1, 2, 3],
+                        explanation: "שינוי טקסט = טריוויאלי. תיקון באג = בינוני. Refactoring = מורכב. ארכיטקטורה = הכי מורכב — שם Extended Thinking הכי שווה."
+                    },
+                    {
+                        type: "improve",
+                        question: "איך לגשת למשימת ארכיטקטורה מורכבת?",
+                        original: "claude -p 'תכנן לי מערכת'",
+                        options: ["להשתמש ב-Opus + Extended Thinking עם brief מפורט: דרישות, constraints, וסטאק טכנולוגי", "להשתמש ב-Haiku כי הוא מהיר", "לשאול ב-ChatGPT", "לכתוב CLAUDE.md ולקוות לטוב"],
+                        correct: 0,
+                        explanation: "Opus + Extended Thinking + brief מפורט = הקומבינציה הטובה ביותר למשימות ארכיטקטורה. Claude חושב לעומק לפני שמגיב.",
+                        wrongExplanations: [null, "Haiku לא מתאים למשימות מורכבות — חסר לו עומק.", "ChatGPT לא משולב בפרויקט ולא רואה את הקוד.", "CLAUDE.md חשוב, אבל לא מספיק — צריך גם מודל חזק ו-thinking."]
+                    },
+                    {
+                        type: "multiple-choice",
+                        question: "מה Extended Thinking מוסיף שClaude רגיל לא עושה?",
+                        options: ["שלב תכנון פנימי — Claude חושב ומארגן לפני שמגיב", "מהירות גבוהה יותר", "גישה לאינטרנט", "יכולת לקרוא קבצים"],
+                        correct: 0,
+                        explanation: "Extended Thinking מוסיף שלב 'חשיבה בקול רם' — Claude מתכנן, שוקל חלופות, ומארגן את הגישה לפני שנותן תשובה.",
+                        wrongExplanations: [null, "זה דווקא לוקח יותר זמן — אבל התוצאה טובה יותר.", "Extended Thinking לא נותן גישה לאינטרנט.", "Claude Code כבר יכול לקרוא קבצים בלי thinking."]
                     }
                 ]
             },
