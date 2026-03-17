@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>מפעל משחקים | Game Factory — למידה אינטראקטיבית בסגנון Duolingo</title>
-    <meta name="description" content="4 משחקים לימודיים אינטראקטיביים, 387 תרגילים, 57 שיעורים — סטוריטלינג, NLP, רשתות חברתיות וחוזקות גאלופ. חינם לגמרי.">
+    <meta name="description" content="6 משחקים לימודיים אינטראקטיביים, 628 תרגילים, 100 שיעורים — סטוריטלינג, NLP, רשתות חברתיות, חוזקות גאלופ, השפעה וגבולות עם ילדים. חינם לגמרי.">
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&family=Frank+Ruhl+Libre:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
@@ -358,6 +358,7 @@
         .game-card-full[data-accent="purple"]  { --card-accent: #8B5CF6; --card-accent-light: #A78BFA; --card-accent-bg: rgba(139,92,246,0.1); }
         .game-card-full[data-accent="green"]   { --card-accent: #3fb950; --card-accent-light: #4dcb65; --card-accent-bg: rgba(63,185,80,0.1); }
         .game-card-full[data-accent="orange"]  { --card-accent: #E07B39; --card-accent-light: #F0975A; --card-accent-bg: rgba(224,123,57,0.1); }
+        .game-card-full[data-accent="rose"]    { --card-accent: #E05580; --card-accent-light: #F07098; --card-accent-bg: rgba(224,85,128,0.1); }
 
         .game-card-inner {
             display: grid;
@@ -912,7 +913,7 @@
     <!-- Hero -->
     <header class="hero" role="banner">
         <div class="hero-badge" data-aos="fade-down" data-aos-duration="500">
-            <i class="fa-solid fa-circle"></i> 5 משחקים פעילים &bull; 100% חינם
+            <i class="fa-solid fa-circle"></i> 6 משחקים פעילים &bull; 100% חינם
         </div>
         <h1 data-aos="fade-up" data-aos-delay="100">תלמדו בזמן<br>שאתם <span class="highlight">נהנים</span></h1>
         <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="200">
@@ -951,11 +952,63 @@
         <div class="container">
             <div class="section-header" data-aos="fade-up">
                 <div class="section-tag"><i class="fa-solid fa-fire"></i> המשחקים</div>
-                <h2 class="section-title">חמישה משחקים, עולם של ידע</h2>
+                <h2 class="section-title">שישה משחקים, עולם של ידע</h2>
                 <p class="section-subtitle">כל משחק הוא קורס שלם — עם מודולים, שיעורים, תרגילים מגוונים ומערכת התקדמות</p>
             </div>
 
             <div class="game-showcase">
+
+                <!-- GAME 0: Claude Code Master (NEW) -->
+                <article class="game-card-full" data-accent="teal" data-aos="fade-up">
+                    <div class="game-card-inner">
+                        <div class="game-card-content">
+                            <div class="game-card-top">
+                                <div class="game-icon"><i class="fa-solid fa-terminal"></i></div>
+                                <div class="game-card-title-area">
+                                    <h3>Claude Code Master</h3>
+                                    <div class="tagline">שליטה מלאה ב-CLI של Anthropic</div>
+                                </div>
+                            </div>
+                            <p class="game-desc">
+                                למדו Claude Code מהבסיס ועד לרמה הכי גבוהה — התקנה, עבודה עם קבצים, הרשאות, prompt engineering, hooks, MCP, agents ועוד.
+                                87 תרגילים אינטראקטיביים בעברית, עם מנטור AI שמלווה אתכם.
+                            </p>
+                            <ul class="game-topics">
+                                <li><i class="fa-solid fa-circle"></i> התקנה, שיחה ראשונה ו-Slash Commands</li>
+                                <li><i class="fa-solid fa-circle"></i> Read, Edit, Write — עבודה עם קבצים</li>
+                                <li><i class="fa-solid fa-circle"></i> CLAUDE.md, הרשאות ובטיחות Git</li>
+                                <li><i class="fa-solid fa-circle"></i> Prompt Engineering וחיסכון בטוקנים</li>
+                                <li><i class="fa-solid fa-circle"></i> Hooks, MCP, Sub-Agents ו-Agent SDK</li>
+                            </ul>
+                            <a href="games/claude-code/" class="game-card-cta">התחילו לשחק <i class="fa-solid fa-arrow-left"></i></a>
+                        </div>
+                        <div class="game-card-sidebar">
+                            <div class="sidebar-stats">
+                                <div class="sidebar-stat">
+                                    <div class="sidebar-stat-icon"><i class="fa-solid fa-layer-group"></i></div>
+                                    <div class="sidebar-stat-text">
+                                        <span class="sidebar-stat-value">7 מודולים</span>
+                                        <span class="sidebar-stat-label">15 שיעורים</span>
+                                    </div>
+                                </div>
+                                <div class="sidebar-stat">
+                                    <div class="sidebar-stat-icon"><i class="fa-solid fa-pen-to-square"></i></div>
+                                    <div class="sidebar-stat-text">
+                                        <span class="sidebar-stat-value">87 תרגילים</span>
+                                        <span class="sidebar-stat-label">7 סוגים שונים</span>
+                                    </div>
+                                </div>
+                                <div class="sidebar-stat">
+                                    <div class="sidebar-stat-icon"><i class="fa-solid fa-robot"></i></div>
+                                    <div class="sidebar-stat-text">
+                                        <span class="sidebar-stat-value">מנטור AI</span>
+                                        <span class="sidebar-stat-label">שואלים ומקבלים תשובות</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
 
                 <!-- GAME 1: Story Game -->
                 <article class="game-card-full" data-accent="gold" data-aos="fade-up">
@@ -1298,6 +1351,73 @@
                     </div>
                 </article>
 
+                <article class="game-card-full" data-accent="rose" data-aos="fade-up">
+                    <div class="game-card-inner">
+                        <div class="game-card-content">
+                            <div class="game-card-top">
+                                <div class="game-icon"><i class="fa-solid fa-shield-heart"></i></div>
+                                <div class="game-card-title-area">
+                                    <h3>גבולות עם ילדים</h3>
+                                    <div class="tagline">מבוסס על הספר של הנרי קלאוד וג'ון טאונסנד — 10 חוקי גבולות</div>
+                                </div>
+                            </div>
+                            <p class="game-desc">
+                                הספר הקלאסי על הורות מעצימה — עכשיו כמשחק אינטראקטיבי.
+                                למדו 10 חוקי גבולות: איך לבנות אופי, אחריות וכוח פנימי אצל ילדיכם, תוך אהבה וכבוד.
+                            </p>
+                            <ul class="game-topics">
+                                <li><i class="fa-solid fa-circle"></i> למה ילדים צריכים גבולות — עתיד, אופי, הורים עם גבולות</li>
+                                <li><i class="fa-solid fa-circle"></i> חוקי גבולות א — זריעה וקצירה, אחריות, כוח</li>
+                                <li><i class="fa-solid fa-circle"></i> חוקי גבולות ב — כבוד, מוטיבציה, הערכת כאב</li>
+                                <li><i class="fa-solid fa-circle"></i> חוקי גבולות ג — יוזמה, קנאה, פעילות וחשיפה</li>
+                                <li><i class="fa-solid fa-circle"></i> יישום — 6 צעדים מעשיים להצבת גבולות</li>
+                            </ul>
+                            <a href="games/boundaries-kids/" class="game-card-cta">התחילו לשחק <i class="fa-solid fa-arrow-left"></i></a>
+                        </div>
+                        <div class="game-card-sidebar">
+                            <div class="sidebar-stats">
+                                <div class="sidebar-stat">
+                                    <div class="sidebar-stat-icon"><i class="fa-solid fa-layer-group"></i></div>
+                                    <div class="sidebar-stat-text">
+                                        <span class="sidebar-stat-value">5 מודולים</span>
+                                        <span class="sidebar-stat-label">15 שיעורים</span>
+                                    </div>
+                                </div>
+                                <div class="sidebar-stat">
+                                    <div class="sidebar-stat-icon"><i class="fa-solid fa-pen-to-square"></i></div>
+                                    <div class="sidebar-stat-text">
+                                        <span class="sidebar-stat-value">85 תרגילים</span>
+                                        <span class="sidebar-stat-label">7 סוגים שונים</span>
+                                    </div>
+                                </div>
+                                <div class="sidebar-stat">
+                                    <div class="sidebar-stat-icon"><i class="fa-solid fa-signal"></i></div>
+                                    <div class="sidebar-stat-text">
+                                        <span class="sidebar-stat-value">בינוני</span>
+                                        <div class="difficulty-bar">
+                                            <span class="active"></span><span class="active"></span><span></span><span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="sidebar-stat">
+                                    <div class="sidebar-stat-icon"><i class="fa-solid fa-clock"></i></div>
+                                    <div class="sidebar-stat-text">
+                                        <span class="sidebar-stat-value">~3.5 שעות</span>
+                                        <span class="sidebar-stat-label">~5 דקות לשיעור</span>
+                                    </div>
+                                </div>
+                                <div class="sidebar-stat">
+                                    <div class="sidebar-stat-icon"><i class="fa-solid fa-user-tie"></i></div>
+                                    <div class="sidebar-stat-text">
+                                        <span class="sidebar-stat-value">קהל יעד</span>
+                                        <span class="sidebar-stat-label">הורים ואנשי חינוך</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
             </div>
         </div>
     </section>
@@ -1539,7 +1659,7 @@
         <div class="container">
             <div class="cta-banner" data-aos="fade-up">
                 <h2>מוכנים להתחיל?</h2>
-                <p>456 תרגילים, 70 שיעורים, 5 משחקים — בחרו את הראשון ותתחילו עכשיו</p>
+                <p>628 תרגילים, 100 שיעורים, 6 משחקים — בחרו את הראשון ותתחילו עכשיו</p>
                 <a href="#games" class="btn-primary"><i class="fa-solid fa-play"></i> לבחירת משחק</a>
             </div>
         </div>
