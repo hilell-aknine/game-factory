@@ -943,6 +943,8 @@ class ClaudeCodeGame {
 
     renderOrder(container, exercise) {
         const shuffled = this.shuffleArray([...exercise.items].map((item, i) => ({ item, originalIndex: i })));
+        this._orderItems = shuffled;
+
         container.innerHTML = `
             <button class="back-btn" onclick="game.exitLesson()">✕</button>
             <div class="exercise-container">
@@ -950,33 +952,127 @@ class ClaudeCodeGame {
                 <div class="exercise-question">${exercise.question}</div>
                 <div class="order-container" id="order-container">
                     ${shuffled.map((obj, i) => `
-                        <div class="order-item" draggable="true" data-index="${i}" data-original="${obj.originalIndex}"
-                             ondragstart="game.dragStart(event)" ondragover="game.dragOver(event)"
-                             ondrop="game.drop(event)" ondragend="game.dragEnd(event)"
-                             ontouchstart="game.touchStart(event)" ontouchmove="game.touchMove(event)" ontouchend="game.touchEnd(event)">
+                        <div class="order-item" data-pos="${i}" data-original="${obj.originalIndex}" onclick="game.selectOrderItem(${i})">
                             <span class="order-number">${i + 1}</span>
-                            <span>${obj.item}</span>
-                            <span class="drag-handle">⋮⋮</span>
+                            <span class="order-text">${obj.item}</span>
+                            <div class="order-buttons">
+                                <button class="order-btn order-up" onclick="event.stopPropagation(); game.moveOrderItem(${i}, -1)" title="הזז למעלה" ${i === 0 ? 'disabled' : ''}>
+                                    <i class="fa-solid fa-chevron-up"></i>
+                                </button>
+                                <button class="order-btn order-down" onclick="event.stopPropagation(); game.moveOrderItem(${i}, 1)" title="הזז למטה" ${i === shuffled.length - 1 ? 'disabled' : ''}>
+                                    <i class="fa-solid fa-chevron-down"></i>
+                                </button>
+                            </div>
                         </div>
                     `).join('')}
                 </div>
+                <div class="order-hint"><i class="fa-solid fa-arrows-up-down"></i> לחצו על החצים או גררו כדי לסדר</div>
             </div>`;
         this.enableCheckButton();
     }
 
-    // Drag & Drop
-    dragStart(e) { e.target.classList.add('dragging'); e.dataTransfer.setData('text/plain', e.target.dataset.index); }
-    dragOver(e) { e.preventDefault(); const dragging = document.querySelector('.dragging'); const target = e.target.closest('.order-item'); if (target && target !== dragging) { const container = document.getElementById('order-container'); const rect = target.getBoundingClientRect(); const midY = rect.top + rect.height / 2; if (e.clientY < midY) { container.insertBefore(dragging, target); } else { container.insertBefore(dragging, target.nextSibling); } this.updateOrderNumbers(); } }
-    drop(e) { e.preventDefault(); }
-    dragEnd(e) { e.target.classList.remove('dragging'); this.updateOrderNumbers(); }
+    selectOrderItem(pos) {
+        if (this.exerciseAnswered) return;
+        this.sound.play('click');
+        const items = document.querySelectorAll('.order-item');
+        if (this._selectedOrderPos !== undefined && this._selectedOrderPos !== pos) {
+            // Swap the two items
+            this._swapOrderItems(this._selectedOrderPos, pos);
+            items.forEach(el => el.classList.remove('order-selected'));
+            this._selectedOrderPos = undefined;
+        } else if (this._selectedOrderPos === pos) {
+            // Deselect
+            items[pos].classList.remove('order-selected');
+            this._selectedOrderPos = undefined;
+        } else {
+            // Select first
+            items.forEach(el => el.classList.remove('order-selected'));
+            items[pos].classList.add('order-selected');
+            this._selectedOrderPos = pos;
+        }
+    }
 
-    // Touch support
-    touchStart(e) { this._touchItem = e.target.closest('.order-item'); if (!this._touchItem) return; this._touchItem.classList.add('dragging'); this._touchStartY = e.touches[0].clientY; }
-    touchMove(e) { if (!this._touchItem) return; e.preventDefault(); const touch = e.touches[0]; const items = [...document.getElementById('order-container').children]; const target = items.find(item => { if (item === this._touchItem) return false; const rect = item.getBoundingClientRect(); return touch.clientY > rect.top && touch.clientY < rect.bottom; }); if (target) { const container = document.getElementById('order-container'); const rect = target.getBoundingClientRect(); if (touch.clientY < rect.top + rect.height / 2) { container.insertBefore(this._touchItem, target); } else { container.insertBefore(this._touchItem, target.nextSibling); } this.updateOrderNumbers(); } }
-    touchEnd(e) { if (this._touchItem) { this._touchItem.classList.remove('dragging'); this._touchItem = null; } }
+    moveOrderItem(pos, direction) {
+        if (this.exerciseAnswered) return;
+        this.sound.play('click');
+        const newPos = pos + direction;
+        const container = document.getElementById('order-container');
+        const items = [...container.children];
+        if (newPos < 0 || newPos >= items.length) return;
 
-    updateOrderNumbers() {
-        document.querySelectorAll('.order-item .order-number').forEach((el, i) => el.textContent = i + 1);
+        this._swapOrderItems(pos, newPos);
+        // Clear selection
+        this._selectedOrderPos = undefined;
+        container.querySelectorAll('.order-item').forEach(el => el.classList.remove('order-selected'));
+    }
+
+    _swapOrderItems(posA, posB) {
+        const container = document.getElementById('order-container');
+        const items = [...container.children];
+        if (posA === posB || !items[posA] || !items[posB]) return;
+
+        // Swap DOM positions with animation
+        const itemA = items[posA];
+        const itemB = items[posB];
+
+        // Get rects before swap
+        const rectA = itemA.getBoundingClientRect();
+        const rectB = itemB.getBoundingClientRect();
+
+        // Swap in DOM
+        if (posA < posB) {
+            container.insertBefore(itemB, itemA);
+        } else {
+            container.insertBefore(itemA, itemB);
+        }
+
+        // Animate
+        const newItems = [...container.children];
+        const newRectA = itemA.getBoundingClientRect();
+        const newRectB = itemB.getBoundingClientRect();
+
+        this._animateSwap(itemA, rectA, newRectA);
+        this._animateSwap(itemB, rectB, newRectB);
+
+        // Update numbers & buttons
+        this._refreshOrderUI();
+    }
+
+    _animateSwap(el, from, to) {
+        const dx = from.left - to.left;
+        const dy = from.top - to.top;
+        el.style.transform = `translate(${dx}px, ${dy}px)`;
+        el.style.transition = 'none';
+        requestAnimationFrame(() => {
+            el.style.transition = 'transform 0.25s ease';
+            el.style.transform = '';
+            setTimeout(() => { el.style.transition = ''; el.style.transform = ''; }, 260);
+        });
+    }
+
+    _refreshOrderUI() {
+        const container = document.getElementById('order-container');
+        const items = [...container.children];
+        const total = items.length;
+        items.forEach((item, i) => {
+            // Update number
+            item.querySelector('.order-number').textContent = i + 1;
+            // Update data-pos
+            item.dataset.pos = i;
+            // Update onclick
+            item.onclick = () => this.selectOrderItem(i);
+            // Update buttons
+            const upBtn = item.querySelector('.order-up');
+            const downBtn = item.querySelector('.order-down');
+            if (upBtn) {
+                upBtn.disabled = i === 0;
+                upBtn.onclick = (e) => { e.stopPropagation(); this.moveOrderItem(i, -1); };
+            }
+            if (downBtn) {
+                downBtn.disabled = i === total - 1;
+                downBtn.onclick = (e) => { e.stopPropagation(); this.moveOrderItem(i, 1); };
+            }
+        });
     }
 
     renderCompare(container, exercise) {
@@ -1172,6 +1268,20 @@ class ClaudeCodeGame {
         } else if (exercise.type === 'fill-blank') {
             const slot = document.getElementById('blank-slot');
             if (slot) slot.classList.add(isCorrect ? 'correct' : 'wrong');
+        } else if (exercise.type === 'order') {
+            // Show correct/wrong per item
+            const orderItems = document.querySelectorAll('.order-item');
+            const userOrder = [...orderItems].map(el => parseInt(el.dataset.original));
+            orderItems.forEach((item, i) => {
+                const orig = parseInt(item.dataset.original);
+                if (orig === exercise.correctOrder[i]) {
+                    item.classList.add('order-correct');
+                } else {
+                    item.classList.add('order-wrong');
+                }
+                // Disable buttons
+                item.querySelectorAll('.order-btn').forEach(b => b.disabled = true);
+            });
         }
 
         if (isCorrect) {
