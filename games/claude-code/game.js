@@ -219,6 +219,31 @@ class ClaudeCodeGame {
     init() {
         this.playerData = this.loadFromLocalStorage() || this.getDefaultPlayerData();
         document.getElementById('loading-screen').style.display = 'none';
+
+        // Show landing page for first-time visitors, or if no lessons completed
+        const hasPlayed = this.playerData.onboardingComplete || Object.keys(this.playerData.completedLessons).length > 0;
+        if (!hasPlayed && !localStorage.getItem('ccLandingSeen')) {
+            this.showLanding();
+            return;
+        }
+
+        this.startGame();
+    }
+
+    showLanding() {
+        document.getElementById('landing-page').style.display = 'block';
+        document.getElementById('app-header').style.display = 'none';
+        document.getElementById('main-content').style.display = 'none';
+        document.getElementById('progress-wrapper').style.display = 'none';
+    }
+
+    hideLanding() {
+        document.getElementById('landing-page').style.display = 'none';
+        localStorage.setItem('ccLandingSeen', '1');
+        this.startGame();
+    }
+
+    startGame() {
         document.getElementById('app-header').style.display = 'block';
         document.getElementById('main-content').style.display = 'block';
         document.getElementById('progress-wrapper').style.display = 'block';
