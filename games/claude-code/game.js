@@ -993,7 +993,9 @@ class ClaudeCodeGame {
     }
 
     moveOrderItem(pos, direction) {
-        if (this.exerciseAnswered) return;
+        if (this.exerciseAnswered || this._orderMoving) return;
+        this._orderMoving = true;
+        setTimeout(() => { this._orderMoving = false; }, 280);
         this.sound.play('click');
         const newPos = pos + direction;
         const container = document.getElementById('order-container');
