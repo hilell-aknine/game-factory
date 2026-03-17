@@ -1218,11 +1218,13 @@ class ClaudeCodeGame {
     // Check Answer
     // ═══════════════════════════════════════
     checkAnswer() {
-        if (this.exerciseAnswered || this.selectedAnswer === null) return;
+        const exercise = this.currentLesson.exercises[this.currentExerciseIndex];
+        // Order exercises don't use selectedAnswer — always have an answer ready
+        const needsSelection = exercise.type !== 'order';
+        if (this.exerciseAnswered || (needsSelection && this.selectedAnswer === null)) return;
         this.exerciseAnswered = true;
         this.sound.play('click');
 
-        const exercise = this.currentLesson.exercises[this.currentExerciseIndex];
         let isCorrect = false;
 
         switch (exercise.type) {
